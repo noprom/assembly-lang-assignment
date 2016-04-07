@@ -23,12 +23,13 @@ codesg segment
   main proc far
     mov ax, datasg
     mov ds, ax
-    mov bx, 0
-                                      ;以上代码将ds指向数据段
+                                      ;将ds指向数据段
 printA:
     mov ah, 9
     lea dx, msgA
-    int 21h                           ;printA输出'Please input A: '
+    int 21h
+                                      ;printA输出'Please input A: '
+
 
 
     mov ax, 4c00h
