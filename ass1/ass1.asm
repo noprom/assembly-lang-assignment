@@ -25,6 +25,7 @@ codesg segment
   main proc far
     mov ax, datasg
     mov ds, ax
+    mov bx, 0
                                       ;将ds指向数据段
 inputAInfo:                           ;inputAInfo输出'Please input A: '
     mov ah, 9
@@ -36,7 +37,6 @@ inputA:                               ;循环输入numA
     int 21h
                                       ;输入单个字符,al存放ASCII码
     sub al, 30h                       ;ASCII码转化为数字
-    mov bx, 0
     jl saveA
     cmp al, 9                         ;与9比较,判断是否为数字
     jg saveA
@@ -51,6 +51,7 @@ inputA:                               ;循环输入numA
 
 saveA:                                ;保存numA
     mov numA, bx
+    mov bx, 0
 
 inputBInfo:                           ;inputBInfo输出'Please input B: '
     mov ah, 9
@@ -62,7 +63,6 @@ inputB:                               ;输入numB
     int 21h
                                       ;输入单个字符,al存放ASCII码
     sub al, 30h                       ;ASCII码转化为数字
-    mov bx, 0
     jl saveB
     cmp al, 9                         ;与9比较,判断是否为数字
     jg saveB
@@ -115,72 +115,84 @@ printAB:                              ;输出numA与numB
     int 21h                           ;输出'A='
 
     mov bx, numA
-    call bin2dec                      ;输出numA的值
+    call TERN                      ;输出numA的值
+
+    mov ah, 2
+    mov dl, CR
+    int 21h
+    mov dl, LF
+    int 21h                           ;以上代码输出换行回车
 
     mov ah, 9
     lea dx, outB                      ;输出'B='
     int 21h
 
     mov bx, numB
-    call bin2dec                      ;输出numB的值
+    call TERN                      ;输出numB的值
 
     mov ax, 4c00h
     int 21h                           ;返回程序
   main endp
 ;-------------------------主过程-----------------------;
-;----------------------二进制转十进制--------------------;
-bin2dec proc
-  mov flag, 0                         ;标志位清零
 
-  mov cx, 10000
-  call dec_div
+;===============================================
+TERN	PROC
+		;二进制十进制转化
+		MOV 	FLAG,0		;标志位初始化
 
-  mov cx, 1000
-  call dec_div
+		MOV		CX,10000
+		CALL	DEC_DIV
 
-  mov cx, 100
-  call dec_div
+		MOV		CX,1000
+		CALL	DEC_DIV
 
-  mov cx, 10
-  call dec_div
+		MOV		CX,100
+		CALL 	DEC_DIV
 
-  mov cx, 1
-  call dec_div
+		MOV		CX,10
+		CALL 	DEC_DIV
 
-  cmp flag, 0                       ;若flag为0则证明要输出的二进制数为0
-  jg 	exit
-  mov ah, 2 		                    ;若要输出的二进制数为0,则这个数不会被dec_div输出
-  MOV DL, '0' 		                  ;因此在这里输出0
-  INT 21h
-exit:
-  ret
-bin2dec endp
-;----------------------二进制转十进制--------------------;
-;------------------------dec_div-----------------------;
-dec_div proc
-  mov ax, bx
-  mov dx, 0
+		MOV		CX,1
+		CALL	DEC_DIV
 
-  div cx
-  mov bx, dx
+		CMP 	FLAG,0 		;若FLAG为0则证明要输出的二进制数为0
+		JG 		TEXIT
+		MOV 	AH,2 		;若要输出的二进制数为0,则这个数不会被DIV_DEC输出
+		MOV 	DL,'0' 		;因此在这里输出0
+		INT 	21H
 
-  mov dl, al
-  add dl, 30h
+TEXIT:
+		RET
+TERN 	ENDP
+;===============================================
 
-  cmp flag, 0
-  jg flag1 		                     ;flag为1,说明之前有非0位,直接输出
-  cmp dl, '0' 		                 ;flag非0,说明之前全部为0位,将当前位于0比较
-  je exit   		                   ;当前位为0,不输出
-  mov flag, 1 		                 ;当前位不为0,将flag置1
+;===============================================
+DEC_DIV PROC
 
-flag1:                             ;输出当前位
-  mov ah, 2
-  int 21h
-exit:
-  ;跳转至此则不输出当前位
-  ret
-dec_div endp
-;------------------------dec_div-----------------------;
+		MOV		AX,BX
+		MOV 	DX,0
+
+		DIV 	CX
+		MOV		BX,DX
+
+		MOV 	DL,AL
+		ADD 	DL,30H
+
+		CMP		FLAG,0
+		JG 		FLAG1 		;FLAG为1,说明之前有非0位,直接输出
+		CMP 	DL,'0' 		;FLAG非0,说明之前全部为0位,将当前位于0比较
+		JE 		NP   		;当前位为0,不输出
+		MOV 	FLAG,1 		;当前位不为0,将FLAG置1
+
+FLAG1:
+		;输出当前位
+		MOV		AH,2
+		INT 	21H
+NP:
+		;跳转至此则不输出当前位
+		RET
+DEC_DIV	ENDP
+;===============================================
 
 codesg ends
 end main
