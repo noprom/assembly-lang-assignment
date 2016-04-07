@@ -15,6 +15,8 @@ datasg segment
   flag db 0                           ;判断标志位
   msgA db 'Please input A: ', '$'     ;定义提示输入A的消息
   msgB db 'Please input B: ', '$'     ;定义提示输入B的消息
+  outA db 'A=', '$'                   ;定义输出A的消息
+  outB db 'B=', '$'                   ;定义输出B的消息
 datasg ends
 ;-------------------------代码段-----------------------;
 codesg segment
@@ -108,7 +110,9 @@ incAB:                                ;numA与numB均为奇数,分别加1
     inc word ptr numB
 
 printAB:                              ;输出numA与numB
-
+    mov ah, 9
+    lea dx, outA
+    int 21h                           ;输出'A='
 
     mov ax, 4c00h
     int 21h                           ;返回程序
