@@ -24,13 +24,37 @@ codesg segment
     mov ax, datasg
     mov ds, ax
                                       ;将ds指向数据段
-printA:
+inputAInfo:
     mov ah, 9
     lea dx, msgA
     int 21h
-                                      ;printA输出'Please input A: '
+                                      ;inputAInfo输出'Please input A: '
+inputA:
+    mov ah, 1
+    int 21h
+                                      ;输入单个字符,al存放ASCII码
+    sub al, 30h                       ;ASCII码转化为数字
+    mov bx, 0
+    jl saveA
+    cmp al, 9                         ;与9比较,判断是否为数字
+    jg saveA
+    cbw                               ;对al进行位扩展
 
+    xchg ax, bx
+    mov cx, 10
+    mul cx
+    xchg ax, bx                       ;将bx中原来的数据乘10
+    add bx, ax                        ;乘完之后加上ax
+    jmp inputA                        ;继续输入下一个字符
 
+saveA:
+    mov numA, bx
+    mov bx, 0
+
+inputBInfo:
+    mov ah, 9
+    lea dx, msgB
+    int 21h                           ;inputBInfo输出'Please input B: '
 
     mov ax, 4c00h
     int 21h                           ;返回程序
