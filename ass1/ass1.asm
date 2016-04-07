@@ -24,12 +24,12 @@ codesg segment
     mov ax, datasg
     mov ds, ax
                                       ;将ds指向数据段
-inputAInfo:
+inputAInfo:                           ;inputAInfo输出'Please input A: '
     mov ah, 9
     lea dx, msgA
     int 21h
-                                      ;inputAInfo输出'Please input A: '
-inputA:
+
+inputA:                               ;循环输入numA
     mov ah, 1
     int 21h
                                       ;输入单个字符,al存放ASCII码
@@ -47,15 +47,15 @@ inputA:
     add bx, ax                        ;交换之后加上ax
     jmp inputA                        ;继续输入下一个字符
 
-saveA:
+saveA:                                ;保存numA
     mov numA, bx
 
-inputBInfo:
+inputBInfo:                           ;inputBInfo输出'Please input B: '
     mov ah, 9
     lea dx, msgB
-    int 21h                           ;inputBInfo输出'Please input B: '
+    int 21h
 
-inputB:
+inputB:                               ;输入numB
     mov ah, 1
     int 21h
                                       ;输入单个字符,al存放ASCII码
@@ -73,7 +73,7 @@ inputB:
     add bx, ax                        ;交换之后加上ax
     jmp inputB                        ;继续输入下一个字符
 
-saveB:
+saveB:                                ;保存numB
     mov numB, bx
 
 judgeA:                               ;判断numA的奇偶
@@ -96,6 +96,18 @@ AIsOddJudgeB:                         ;此时numA为奇数,需要判断numB的�
     jg incAB                          ;numB为奇数,跳转到incAB,将numA和numB均加1
     jmp printAB                       ;跳转到printAB,打印AB的值
 
+exchangeAB:                           ;交换numA与numB的值
+    mov ax, numA
+    mov bx, numB
+    mov numA, bx
+    mov numB, ax
+    jmp printAB
+
+incAB:                                ;numA与numB均为奇数,分别加1
+    inc word ptr numA
+    inc word ptr numB
+
+printAB:                              ;输出numA与numB
 
 
     mov ax, 4c00h
