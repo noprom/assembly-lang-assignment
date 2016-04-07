@@ -76,6 +76,27 @@ inputB:
 saveB:
     mov numB, bx
 
+judgeA:                               ;判断numA的奇偶
+    mov ax, numA
+    and ax, 0001h
+    cmp ax, 0                         ;与0比较,如果大于零则numA为奇数
+    jg AIsOddJudgeB                   ;numA为奇数,跳转到AIsOddJudgeB判断B的奇偶
+
+AisEvenJudgeB:                        ;此时numA为偶数,需要判断numB的奇偶
+    mov ax, numB
+    and ax, 0001h
+    cmp ax, 0                         ;与0比较,如果大于零则numB为奇数
+    jg exchangeAB                     ;numB为奇数,跳转到exchangeAB,将numA和numB交换
+    jmp printAB                       ;跳转到printAB,打印AB的值
+
+AIsOddJudgeB:                         ;此时numA为奇数,需要判断numB的奇偶
+    mov ax, numB
+    and ax, 0001h
+    cmp ax, 0                         ;与0比较,如果大于零则numB为奇数
+    jg incAB                          ;numB为奇数,跳转到incAB,将numA和numB均加1
+    jmp printAB                       ;跳转到printAB,打印AB的值
+
+
 
     mov ax, 4c00h
     int 21h                           ;返回程序
