@@ -115,7 +115,7 @@ printAB:                              ;输出numA与numB
     int 21h                           ;输出'A='
 
     mov bx, numA
-    call TERN                      ;输出numA的值
+    call bin2dec                      ;输出numA的值
 
     mov ah, 2
     mov dl, CR
@@ -128,71 +128,66 @@ printAB:                              ;输出numA与numB
     int 21h
 
     mov bx, numB
-    call TERN                      ;输出numB的值
+    call bin2dec                      ;输出numB的值
 
     mov ax, 4c00h
     int 21h                           ;返回程序
   main endp
 ;-------------------------主过程-----------------------;
 
-;===============================================
-TERN	PROC
-		;二进制十进制转化
-		MOV 	FLAG,0		;标志位初始化
+;----------------------二进制转十进制--------------------;
+bin2dec proc
+  mov flag, 0                         ;标志位清零
 
-		MOV		CX,10000
-		CALL	DEC_DIV
+  mov cx, 10000
+  call dec_div
 
-		MOV		CX,1000
-		CALL	DEC_DIV
+  mov cx, 1000
+  call dec_div
 
-		MOV		CX,100
-		CALL 	DEC_DIV
+  mov cx, 100
+  call dec_div
 
-		MOV		CX,10
-		CALL 	DEC_DIV
+  mov cx, 10
+  call dec_div
 
-		MOV		CX,1
-		CALL	DEC_DIV
+  mov cx, 1
+  call dec_div
 
-		CMP 	FLAG,0 		;若FLAG为0则证明要输出的二进制数为0
-		JG 		TEXIT
-		MOV 	AH,2 		;若要输出的二进制数为0,则这个数不会被DIV_DEC输出
-		MOV 	DL,'0' 		;因此在这里输出0
-		INT 	21H
+  cmp flag, 0                       ;若flag为0则证明要输出的二进制数为0
+  jg 	exit
+  mov ah, 2 		                    ;若要输出的二进制数为0,则这个数不会被dec_div输出
+  MOV DL, '0' 		                  ;因此在这里输出0
+  INT 21h
+exit:
+  ret
+bin2dec endp
+;----------------------二进制转十进制--------------------;
+;------------------------dec_div-----------------------;
+dec_div proc
+  mov ax, bx
+  mov dx, 0
 
-TEXIT:
-		RET
-TERN 	ENDP
-;===============================================
+  div cx
+  mov bx, dx
 
-;===============================================
-DEC_DIV PROC
+  mov dl, al
+  add dl, 30h
 
-		MOV		AX,BX
-		MOV 	DX,0
+  cmp flag, 0
+  jg flag1 		                     ;flag为1,说明之前有非0位,直接输出
+  cmp dl, '0' 		                 ;flag非0,说明之前全部为0位,将当前位于0比较
+  je exit1   		                   ;当前位为0,不输出
+  mov flag, 1 		                 ;当前位不为0,将flag置1
 
-		DIV 	CX
-		MOV		BX,DX
-
-		MOV 	DL,AL
-		ADD 	DL,30H
-
-		CMP		FLAG,0
-		JG 		FLAG1 		;FLAG为1,说明之前有非0位,直接输出
-		CMP 	DL,'0' 		;FLAG非0,说明之前全部为0位,将当前位于0比较
-		JE 		NP   		;当前位为0,不输出
-		MOV 	FLAG,1 		;当前位不为0,将FLAG置1
-
-FLAG1:
-		;输出当前位
-		MOV		AH,2
-		INT 	21H
-NP:
-		;跳转至此则不输出当前位
-		RET
-DEC_DIV	ENDP
-;===============================================
+flag1:                             ;输出当前位
+  mov ah, 2
+  int 21h
+exit1:
+  ;跳转至此则不输出当前位
+  ret
+dec_div endp
+;------------------------dec_div-----------------------;
 
 codesg ends
 end main
