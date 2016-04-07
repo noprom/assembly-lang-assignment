@@ -21,7 +21,7 @@ datasg ends
 ;-------------------------代码段-----------------------;
 codesg segment
   assume cs: codesg, ss: stacksg, ds: datasg    ;指定寄存器的关系
-  ;-------------------------主过程-----------------------;
+;-------------------------主过程-----------------------;
   main proc far
     mov ax, datasg
     mov ds, ax
@@ -114,8 +114,25 @@ printAB:                              ;输出numA与numB
     lea dx, outA
     int 21h                           ;输出'A='
 
+    mov bx, numA
+    call bin2dec                      ;输出numA的值
+
+    mov ah, 9
+    lea dx, outB                      ;输出'B='
+    int 21h
+
+    mov bx, numB
+    call bin2dec                      ;输出numB的值
+
     mov ax, 4c00h
     int 21h                           ;返回程序
   main endp
+;-------------------------主过程-----------------------;
+;----------------------二进制转十进制--------------------;
+bin2dec proc
+  
+bin2dec endp
+;----------------------二进制转十进制--------------------;
+
 codesg ends
 end main
