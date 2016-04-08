@@ -70,8 +70,8 @@ printA:
   cmp indexA, sizeA
   jge exitA                                     ;如果索引大于等于数组长度则退出
   mov di, indexA
-  mov bx, word ptr arrA[bi]
-  and bx, 0011h
+  mov bx, word ptr arrA[di]
+  and bx, 0011h                                 ;and 0011h
   call bin2dec                                  ;二进制转为十进制输出
   call printS                                   ;输出,
   inc indexA                                    ;累加索引
