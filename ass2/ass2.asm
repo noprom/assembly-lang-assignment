@@ -124,6 +124,39 @@ contB:
     call printArrB
     call printCRLF
 ;-----------------对数组A进行冒泡排序,并输出---------------;
+;-----------------依次遍历数组A和B,找出相同的--------------;
+    mov indexA, sizeA - 1                       ;初始化循环遍历数组A的下标
+    mov indexB, sizeB - 1                       ;初始化循环遍历数组B的下标
+    mov sizeC, 0                                ;初始化数组C的大小
+
+process:
+    mov bl, indexA
+    cmp bl, 0
+    jl done
+                                                ;判断数组A是否遍历结束,如果结束则跳转至done
+    mov bl, indexB
+    cmp bl, 0
+    jl done
+                                                ;判断数组A是否遍历结束,如果结束则跳转至done
+    mov bx, word ptr indexA
+    mov ax, word ptr arrA[bx]
+    and ax, 00ffh
+                                                ;将数组A当前元素存放在ax中
+    mov bx, word ptr indexB
+    mov bx, word ptr arrB[bx]
+    and bx, 00ffh
+                                                ;将数组B当前元素存放在bx中
+    cmp ax, bx                                  ;比较数组A和数组B当前遍历的元素的值
+    je equal                                    ;数组A和数组B当前元素相等
+    jl lower                                    ;数组A当前元素<数组B当前元素
+    jg greater                                  ;数组A当前元素>数组B当前元素
+
+equal:
+    
+done:                                           ;循环遍历结束
+
+;-----------------依次遍历数组A和B,找出相同的--------------;
+
     ;返回程序
     mov ax, 4c00h
     int 21h
