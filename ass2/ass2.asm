@@ -70,7 +70,26 @@ arrAAfterSortMsgInfo:                           ;arrAAfterSortMsgInfo输出'Afte
     mov ah, 9
     lea dx, arrAAfterSortMsg
     int 21h
+;--------------------对数组A进行冒泡排序------------------;
+sortArrA:
+    mov di, sizeA - 1                           ;外层循环次数
+loopA1:
+    mov cx, di                                  ;内层循环次数
+    mov bx, 0
+loopA2:
+    mov al, arrA[bx]
+    cmp al, arrA[bx+1]
+    jle contA                                   ;小于等于则不做变化
 
+    xchg al, arrA[bx+1]                         ;否则对两数进行交换
+    xchg arrA[bx], al
+contA:
+    add bx, 1
+    loop loopA2
+    dec di
+    jnz loopA1                                  ;不为0则继续外层循环
+
+;--------------------对数组A进行冒泡排序------------------;
     ;返回程序
     mov ax, 4c00h
     int 21h
