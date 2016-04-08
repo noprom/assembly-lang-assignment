@@ -17,7 +17,7 @@ datasg segment
   indexA db 0                                   ;输出数组A时的下标
   db	0
 
-  arrB db 3, 7, 9, 8, 1, 55, 33, 22, 10, 19, 21, 35, 60, 31, 14, 15, 23, 69, 93, 172 ;数组B
+  arrB db 3, 7, 9, 8, 1, 55, 33, 22, 10, 19, 21, 35, 60, 31, 14, 15, 23, 69, 93, 0 ;数组B
   db '$'
   sizeB equ ($-arrB-1)                              ;数组B元素个数
   db	0
@@ -101,7 +101,29 @@ arrBAfterSortMsgInfo:                           ;arrBAfterSortMsgInfo输出'Afte
     lea dx, arrBAfterSortMsg
     int 21h
 
+;-----------------对数组B进行冒泡排序,并输出---------------;
+sortArrB:
+    mov di, sizeB - 1                           ;外层循环次数
+loopB1:
+    mov cx, di                                  ;内层循环次数
+    mov bx, 0
+loopB2:
+    mov al, arrB[bx]
+    cmp al, arrB[bx+1]
+    jle contB                                   ;小于等于则不做变化
 
+    xchg al, arrB[bx+1]                         ;否则对两数进行交换
+    xchg arrB[bx], al
+contB:
+    add bx, 1
+    loop loopB2
+    dec di
+    jnz loopB1                                  ;不为0则继续外层循环
+
+    mov indexB, 0
+    call printArrB
+    call printCRLF
+;-----------------对数组A进行冒泡排序,并输出---------------;
     ;返回程序
     mov ax, 4c00h
     int 21h
