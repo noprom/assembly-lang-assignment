@@ -202,7 +202,8 @@ printCRLF endp
 ;---------------------打印数组A的内容-------------------;
 printArrA proc
 printA:
-  cmp indexA, sizeA
+  mov bx, word ptr indexA
+  cmp bx, word ptr sizeA
   jge exitA                                     ;如果索引大于等于数组长度则退出
   mov di, word ptr indexA
   mov bx, word ptr arrA[di]
@@ -218,7 +219,8 @@ printArrA endp
 ;---------------------打印数组B的内容-------------------;
 printArrB proc
 printB:
-  cmp indexB, sizeB
+  mov bx, word ptr indexB
+  cmp bx, word ptr sizeB
   jge exitB                                     ;如果索引大于等于数组长度则退出
   mov di, word ptr indexB
   mov bx, word ptr arrB[di]
