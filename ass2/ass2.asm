@@ -11,18 +11,25 @@ stacksg ends
 ;-------------------------数据段-----------------------;
 datasg segment
   arrA db 1, 9, 2, 3, 7, 8, 4, 5, 10, 6, 20, 19, 18, 13, 14, 15, 32, 96, 193, 132     ;数组A
-  ;db '$'
-  sizeA equ ($-arrA)                              ;数组A元素个数
+  db '$'
+  sizeA equ ($-arrA-1)                              ;数组A元素个数
+  db	0
   indexA db 0                                   ;输出数组A时的下标
+  db	0
 
   arrB db 3, 7, 9, 8, 1, 55, 33, 22, 10, 19, 21, 35, 60, 31, 14, 15, 23, 69, 93, 172 ;数组B
-  ;db '$'
-  sizeB equ ($-arrB)                              ;数组B元素个数
+  db '$'
+  sizeB equ ($-arrB-1)                              ;数组B元素个数
+  db	0
   indexB db 0                                   ;输出数组B时的下标
+  db	0
 
   arrC db 40 dup(?)                             ;数组C
-  ctC db 0                                      ;数组C元素个数,初始状态为0
+  db '$'
+  sizeC db 0                                      ;数组C元素个数,初始状态为0
+  db	0
   indexC db 0                                   ;输出数组C时的下标
+  db	0
 
   flag db 0                                     ;输出0判断flag
 
@@ -71,7 +78,7 @@ printA:
   jge exitA                                     ;如果索引大于等于数组长度则退出
   mov di, indexA
   mov bx, word ptr arrA[di]
-  and bx, 0011h                                 ;and 0011h
+  and bx, 00ffh                                 ;and 00ffh
   call bin2dec                                  ;二进制转为十进制输出
   call printS                                   ;输出,
   inc indexA                                    ;累加索引
