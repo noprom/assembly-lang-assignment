@@ -95,6 +95,13 @@ contA:
     call printCRLF
 ;-----------------对数组A进行冒泡排序,并输出---------------;
 
+;---------------------输出排序之后的值-------------------;
+arrBAfterSortMsgInfo:                           ;arrBAfterSortMsgInfo输出'After sort, array B: '
+    mov ah, 9
+    lea dx, arrBAfterSortMsg
+    int 21h
+
+
     ;返回程序
     mov ax, 4c00h
     int 21h
