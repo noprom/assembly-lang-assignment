@@ -10,7 +10,7 @@ stacksg segment stack 'S'
 stacksg ends
 ;-------------------------数据段-----------------------;
 datasg segment
-  arrA db 1, 9, 2, 3, 7, 8, 4, 5, 10, 6, 20, 19, 18, 13, 14, 15, 32, 96, 193, 132     ;数组A
+  arrA db 1, 9, 2, 3, 7, 8, 4, 5, 10, 6, 20, 19, 18, 13, 14, 15, 32, 96, 100, 32     ;数组A
   db '$'
   sizeA equ ($-arrA-1)                              ;数组A元素个数
   db	0
@@ -70,6 +70,7 @@ arrAAfterSortMsgInfo:                           ;arrAAfterSortMsgInfo输出'Afte
     mov ah, 9
     lea dx, arrAAfterSortMsg
     int 21h
+
 ;-----------------对数组A进行冒泡排序,并输出---------------;
 sortArrA:
     mov di, sizeA - 1                           ;外层循环次数
@@ -93,6 +94,7 @@ contA:
     call printArrA
     call printCRLF
 ;-----------------对数组A进行冒泡排序,并输出---------------;
+
     ;返回程序
     mov ax, 4c00h
     int 21h
