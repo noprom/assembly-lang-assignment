@@ -65,7 +65,7 @@ printBContent:
     call printArrB
     call printCRLF
 
-;----------------------输出排序之后的值--------------------;
+;---------------------输出排序之后的值-------------------;
 arrAAfterSortMsgInfo:                           ;arrAAfterSortMsgInfo输出'After sort, array A: '
     mov ah, 9
     lea dx, arrAAfterSortMsg
