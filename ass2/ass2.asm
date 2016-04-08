@@ -56,7 +56,12 @@ arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Be
 printArrAContet:
     call printArrA
 ;----------------------输出B原来的值--------------------;
+arrBBeforeSortMsgInfo:                          ;arrBBeforeSortMsgInfo输出'Before sort, array B: '
+    mov ah, 9
+    lea dx, arrBBeforeSortMsg
+    int 21h
 
+    
     ;返回程序
     mov ax, 4c00h
     int 21h
