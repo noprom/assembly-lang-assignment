@@ -151,9 +151,27 @@ process:
     jl lower                                    ;数组A当前元素<数组B当前元素
     jg greater                                  ;数组A当前元素>数组B当前元素
 
-equal:
-    
+equal:                                          ;数组A和数组B当前元素相等
+    mov bx, word ptr sizeC
+    and bx, 00ffh
+    mov arrC[bx], al
+                                                ;将相等的元素存入数组C
+    dec indexA                                  ;将遍历数组A的索引减1
+    dec indexB                                  ;将遍历数组B的索引减1
+    inc sizeC                                   ;增加数组C的大小
+    jmp process                                 ;继续跳转处理
+
+lower:                                          ;数组A当前元素<数组B当前元素
+    dec indexB                                  ;此时需要将遍历数组B的索引减少1
+    jmp process                                 ;继续跳转处理
+
+greater:                                        ;数组A当前元素>数组B当前元素
+    dec indexA                                  ;此时需要将遍历数组A的索引减少1
+    jmp process                                 ;继续跳转处理
+
 done:                                           ;循环遍历结束
+    mov indexC, 0
+    call printArrC
 
 ;-----------------依次遍历数组A和B,找出相同的--------------;
 
@@ -212,6 +230,23 @@ printB:
 exitB:
     ret
 printArrB endp
+
+;---------------------打印数组C的内容-------------------;
+printArrC proc
+printC:
+  mov bx, word ptr indexC
+  cmp bx, word ptr sizeC
+  jge exitC                                     ;如果索引大于等于数组长度则退出
+  mov di, word ptr indexC
+  mov bx, word ptr arrC[di]
+  and bx, 00ffh                                 ;and 00ffh
+  call bin2dec                                  ;二进制转为十进制输出
+  call printS                                   ;输出,
+  inc indexC                                    ;累加索引
+  jmp printC
+exitC:
+    ret
+printArrC endp
 
 ;----------------------二进制转十进制--------------------;
 bin2dec proc
