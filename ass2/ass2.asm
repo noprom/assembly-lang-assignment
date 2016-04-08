@@ -63,7 +63,13 @@ arrBBeforeSortMsgInfo:                          ;arrBBeforeSortMsgInfo输出'Bef
     int 21h
 printBContent:
     call printArrB
-    ;call printCRLF
+    call printCRLF
+
+;----------------------输出排序之后的值--------------------;
+arrAAfterSortMsgInfo:                           ;arrAAfterSortMsgInfo输出'After sort, array A: '
+    mov ah, 9
+    lea dx, arrAAfterSortMsg
+    int 21h
 
     ;返回程序
     mov ax, 4c00h
