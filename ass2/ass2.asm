@@ -61,7 +61,9 @@ arrBBeforeSortMsgInfo:                          ;arrBBeforeSortMsgInfo输出'Bef
     mov ah, 9
     lea dx, arrBBeforeSortMsg
     int 21h
-
+printBContent:
+    call printArrB
+    ;call printCRLF
 
     ;返回程序
     mov ax, 4c00h
@@ -92,17 +94,32 @@ printArrA proc
 printA:
   cmp indexA, sizeA
   jge exitA                                     ;如果索引大于等于数组长度则退出
-  mov di, indexA
+  mov di, word ptr indexA
   mov bx, word ptr arrA[di]
   and bx, 00ffh                                 ;and 00ffh
   call bin2dec                                  ;二进制转为十进制输出
   call printS                                   ;输出,
   inc indexA                                    ;累加索引
   jmp printA
-
 exitA:
     ret
 printArrA endp
+
+;---------------------打印数组B的内容-------------------;
+printArrB proc
+printB:
+  cmp indexB, sizeB
+  jge exitB                                     ;如果索引大于等于数组长度则退出
+  mov di, word ptr indexB
+  mov bx, word ptr arrB[di]
+  and bx, 00ffh                                 ;and 00ffh
+  call bin2dec                                  ;二进制转为十进制输出
+  call printS                                   ;输出,
+  inc indexB                                    ;累加索引
+  jmp printB
+exitB:
+    ret
+printArrB endp
 
 ;----------------------二进制转十进制--------------------;
 bin2dec proc
