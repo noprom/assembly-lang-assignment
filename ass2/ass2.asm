@@ -170,8 +170,13 @@ greater:                                        ;数组A当前元素>数组B当�
     jmp process                                 ;继续跳转处理
 
 done:                                           ;循环遍历结束
+arrCContentMsgInfo:                             ;arrCContentMsgInfo输出'The content of array C: '
+    mov ah, 9
+    lea dx, arrCContentMsg
+    int 21h
+
     mov indexC, 0
-    call printArrC
+    call printArrC                              ;打印数组C的内容
 
 ;-----------------依次遍历数组A和B,找出相同的--------------;
 
