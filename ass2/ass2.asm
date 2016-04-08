@@ -12,12 +12,12 @@ stacksg ends
 datasg segment
   arrA db 1, 9, 2, 3, 7, 8, 4, 5, 10, 6, 20, 19, 18, 13, 14, 15, 32, 96, 193, 132     ;数组A
   ;db '$'
-  ctA equ ($-arrA)                              ;数组A元素个数
+  sizeA equ ($-arrA)                              ;数组A元素个数
   indexA db 0                                   ;输出数组A时的下标
 
   arrB db 3, 7, 9, 8, 1, 55, 33, 22, 10, 19, 21, 35, 60, 31, 14, 15, 23, 69, 93, 172 ;数组B
   ;db '$'
-  ctB equ ($-arrB)                              ;数组B元素个数
+  sizeB equ ($-arrB)                              ;数组B元素个数
   indexB db 0                                   ;输出数组B时的下标
 
   arrC db 40 dup(?)                             ;数组C
@@ -53,5 +53,15 @@ arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Be
     mov ax, 4c00h
     int 21h
 main endp
+
+;---------------------打印数组A的内容-------------------;
+printArrA proc
+printA:
+  cmp indexA, sizeA
+  jge exitA                                     ;如果索引大于等于数组长度则退出
+
+exitA:
+    ret
+printArrA endp
 codesg ends
 end main
