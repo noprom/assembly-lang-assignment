@@ -55,7 +55,7 @@ arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Be
     int 21h
 printArrAContet:
     call printArrA
-    call printCR
+    call printCRLF
 ;----------------------输出B原来的值--------------------;
 arrBBeforeSortMsgInfo:                          ;arrBBeforeSortMsgInfo输出'Before sort, array B: '
     mov ah, 9
@@ -77,14 +77,14 @@ printS proc
 printS endp
 ;-----------------------打印字符串,---------------------;
 ;----------------------输出回车符号----------------------;
-printCR proc
+printCRLF proc
   mov ah, 2
   mov dl, CR
   int 21h
   mov dl, LF
   int 21h
   ret
-printCR endp
+printCRLF endp
 ;----------------------输出回车符号----------------------;
 
 ;---------------------打印数组A的内容-------------------;
