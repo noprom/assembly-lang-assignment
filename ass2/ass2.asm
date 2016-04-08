@@ -60,8 +60,63 @@ printA:
   cmp indexA, sizeA
   jge exitA                                     ;如果索引大于等于数组长度则退出
 
+
 exitA:
     ret
 printArrA endp
+
+;----------------------二进制转十进制--------------------;
+bin2dec proc
+  mov flag, 0                         ;标志位清零
+
+  mov cx, 10000
+  call dec_div
+
+  mov cx, 1000
+  call dec_div
+
+  mov cx, 100
+  call dec_div
+
+  mov cx, 10
+  call dec_div
+
+  mov cx, 1
+  call dec_div
+
+  cmp flag, 0                       ;若flag为0则证明要输出的二进制数为0
+  jg 	exit
+  mov ah, 2 		                    ;若要输出的二进制数为0,则这个数不会被dec_div输出
+  MOV DL, '0' 		                  ;因此在这里输出0
+  INT 21h
+exit:
+  ret
+bin2dec endp
+;----------------------二进制转十进制--------------------;
+;------------------------dec_div-----------------------;
+dec_div proc
+  mov ax, bx
+  mov dx, 0
+
+  div cx
+  mov bx, dx
+
+  mov dl, al
+  add dl, 30h
+
+  cmp flag, 0
+  jg flag1 		                     ;flag为1,说明之前有非0位,直接输出
+  cmp dl, '0' 		                 ;flag非0,说明之前全部为0位,将当前位于0比较
+  je exit1   		                   ;当前位为0,不输出
+  mov flag, 1 		                 ;当前位不为0,将flag置1
+
+flag1:                             ;输出当前位
+  mov ah, 2
+  int 21h
+exit1:
+  ;跳转至此则不输出当前位
+  ret
+dec_div endp
+;------------------------dec_div-----------------------;
 codesg ends
 end main
