@@ -42,8 +42,16 @@ main proc far
   mov ax, datasg
   mov ds, ax
 ;----------------------输出A原来的值--------------------;
+arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Before sort, array A: '
+    mov ah, 9
+    lea dx, arrABeforeSortMsg
+    int 21h
 
 ;----------------------输出B原来的值--------------------;
+
+    ;返回程序
+    mov ax, 4c00h
+    int 21h
 main endp
 codesg ends
 end main
