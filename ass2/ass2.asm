@@ -70,7 +70,7 @@ arrAAfterSortMsgInfo:                           ;arrAAfterSortMsgInfo输出'Afte
     mov ah, 9
     lea dx, arrAAfterSortMsg
     int 21h
-;--------------------对数组A进行冒泡排序------------------;
+;-----------------对数组A进行冒泡排序,并输出---------------;
 sortArrA:
     mov di, sizeA - 1                           ;外层循环次数
 loopA1:
@@ -89,7 +89,10 @@ contA:
     dec di
     jnz loopA1                                  ;不为0则继续外层循环
 
-;--------------------对数组A进行冒泡排序------------------;
+    mov indexA, 0
+    call printArrA
+    call printCRLF
+;-----------------对数组A进行冒泡排序,并输出---------------;
     ;返回程序
     mov ax, 4c00h
     int 21h
