@@ -46,7 +46,8 @@ arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Be
     mov ah, 9
     lea dx, arrABeforeSortMsg
     int 21h
-
+printArrAContet:
+    call printArrA
 ;----------------------输出B原来的值--------------------;
 
     ;返回程序
@@ -54,12 +55,27 @@ arrABeforeSortMsgInfo:                           ;arrABeforeSortMsgInfo输出'Be
     int 21h
 main endp
 
+;-----------------------打印字符串,---------------------;
+printS proc
+  mov ah, 2
+  mov dl, ','
+  int 21h
+  ret
+printS endp
+;-----------------------打印字符串,---------------------;
+
 ;---------------------打印数组A的内容-------------------;
 printArrA proc
 printA:
   cmp indexA, sizeA
   jge exitA                                     ;如果索引大于等于数组长度则退出
-
+  mov di, indexA
+  mov bx, word ptr arrA[bi]
+  and bx, 0011h
+  call bin2dec                                  ;二进制转为十进制输出
+  call printS                                   ;输出,
+  inc indexA                                    ;累加索引
+  jmp printA
 
 exitA:
     ret
