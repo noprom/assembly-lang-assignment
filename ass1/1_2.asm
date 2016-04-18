@@ -14,24 +14,24 @@ datasg segment
   db '$'
   sizeA equ ($-arrA-1)                              ;数组A元素个数
   db	0
-  indexA db 0                                   ;输出数组A时的下标
+  indexA db 0                                       ;输出数组A时的下标
   db	0
 
   arrB db 3, 7, 9, 8, 1, 55, 33, 22, 10, 19, 21, 35, 60, 31, 14, 15, 23, 69, 93, 0 ;数组B
   db '$'
   sizeB equ ($-arrB-1)                              ;数组B元素个数
   db	0
-  indexB db 0                                   ;输出数组B时的下标
+  indexB db 0                                       ;输出数组B时的下标
   db	0
 
-  arrC db 40 dup(?)                             ;数组C
+  arrC db 40 dup(?)                                 ;数组C
   db '$'
-  sizeC db 0                                      ;数组C元素个数,初始状态为0
+  sizeC db 0                                        ;数组C元素个数,初始状态为0
   db	0
-  indexC db 0                                   ;输出数组C时的下标
+  indexC db 0                                       ;输出数组C时的下标
   db	0
 
-  flag db 0                                     ;输出0判断flag
+  flag db 0                                         ;输出0判断flag
 
   ;下面是输出的字符串常量
   arrABeforeSortMsg  db 'Before sort, array A: ', '$'  ;输出'Before sort, array A: '
@@ -185,14 +185,14 @@ arrCContentMsgInfo:                             ;arrCContentMsgInfo输出'The co
     int 21h
 main endp
 
-;-----------------------打印字符串,---------------------;
+;------------------------打印字符,----------------------;
 printS proc
   mov ah, 2
   mov dl, ','
   int 21h
   ret
 printS endp
-;-----------------------打印字符串,---------------------;
+;------------------------打印字符,----------------------;
 ;----------------------输出回车符号----------------------;
 printCRLF proc
   mov ah, 2
