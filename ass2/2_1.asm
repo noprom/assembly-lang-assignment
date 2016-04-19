@@ -32,8 +32,8 @@ ENDM
 ;输入字符串
 ;-----------------------------------------------------;
 INPUT	MACRO	ASC
+  MOV AH, 0AH     ;接受一串字符串
   LEA DX, ASC
-  MOV AH, 0AH
   INT 21H
 ENDM
 
@@ -56,7 +56,7 @@ ASC_BIN MACRO ASC, BIN
   XOR   CH,CH     	;CX中为十进制位数
   INC   SI
   JCXZ  M2
-M1:
+  M1:
   MOV BX, 10
   MUL BX  		      ;(AX)乘以10
 
@@ -65,7 +65,7 @@ M1:
   AND BX,000FH		  ;把十进制数的ASCII码转换成十进制数
   ADD AX,BX
 	LOOP M1
-M2:
+  M2:
   MOV BIN, AX		    ;存放输入的二进制值
 ENDM
 
@@ -75,13 +75,13 @@ ENDM
 ;    ASC: ASCII 码
 ;    BIN: 转化之后的二进制形式
 ;-----------------------------------------------------;
-BIN_DEC	MACRO	ASC, BIN
+BIN_DEC	MACRO	BIN, ASC
 	LOCAL	L1,L2
 
 	LEA	SI,ASC+4
 	MOV	AX,BIN
 	MOV	CX,10
-L1:
+  L1:
 	CMP	AX,0
 	JE	L2
 	MOV	DX,0
@@ -90,7 +90,7 @@ L1:
 	MOV	[SI],DL
 	DEC	SI
 	JMP	SHORT	L1
-L2:
+  L2:
 	NOP
 ENDM
 
@@ -113,7 +113,7 @@ STACKSG ENDS
 DATASG SEGMENT
   inputMsg DB 'Please input n (n<=10):$'
   inputErr DB 'Error: n should be in range [1, 10]$'
-  numASC DB 5 DUP(?)
+  numASC DB 2 , ? , 2 DUP(?)
   numBIN DW ?         ;输入数字的二进制
 DATASG ENDS
 ;-------------------------数据段-----------------------;
