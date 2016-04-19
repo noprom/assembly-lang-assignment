@@ -26,7 +26,7 @@ INPUT	MACRO	ASC
 ENDM
 
 ;-----------------------------------------------------;
-;ASCII转化为二进制
+;十进制数转换成16位二进制
 ;输入:
 ;    ASC: ASCII 码
 ;    BIN: 转化之后的二进制形式
@@ -35,27 +35,26 @@ ASC_BIN MACRO ASC, BIN
   LOCAL M1, M2
 
   LEA SI, ASC + 1		 ;建立输入缓冲区的地址指针
-  ;十进制数转换成16位二进制数子程序
   ;SI指向十进制数缓冲区，其中第一个字节存放要转
   ;换的十进制位数，从第二个字节开始存放着十进制
   ;数的ASCII码。AX中存放转换结果。
 
   XOR   AX,AX
   MOV   CL,[SI]
-  XOR   CH,CH     		;CX中为十进制位数
+  XOR   CH,CH     	;CX中为十进制位数
   INC   SI
   JCXZ  M2
 M1:
-    MOV BX, 10
-    MUL BX  		      ;(AX)乘以10
+  MOV BX, 10
+  MUL BX  		      ;(AX)乘以10
 
-    MOV BL, [SI]		  ;得到一位十进制数的ASCII码
-    INC SI	    	    ;修改地址指针
-    AND BX,000FH		  ;把十进制数的ASCII码转换成十进制数
-    ADD AX,BX
-  	LOOP M1
-M2: RET
-  MOV BIN, AX		      ;存放输入的二进制值
+  MOV BL, [SI]		  ;得到一位十进制数的ASCII码
+  INC SI	    	    ;修改地址指针
+  AND BX,000FH		  ;把十进制数的ASCII码转换成十进制数
+  ADD AX,BX
+	LOOP M1
+M2:
+  MOV BIN, AX		    ;存放输入的二进制值
 ENDM
 
 ;-----------------------------------------------------;
