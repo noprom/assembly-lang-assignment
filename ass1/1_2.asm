@@ -266,7 +266,7 @@ bin2dec proc
   call dec_div
 
   mov cx, 100
-  call dec_div
+  call dec_div  
 
   mov cx, 10
   call dec_div
