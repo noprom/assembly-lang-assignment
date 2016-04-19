@@ -113,7 +113,7 @@ STACKSG ENDS
 DATASG SEGMENT
   inputMsg DB 'Please input n (n<=10):$'
   inputErr DB 'Error: n should be in range [1, 10]$'
-  numASC DB 2 , ? , 2 DUP(?)
+  numASC DB 5 , ? , 5 DUP(?)
   numBIN DW ?         ;输入数字的二进制
 DATASG ENDS
 ;-------------------------数据段-----------------------;
