@@ -17,11 +17,23 @@ PRINT	MACRO	ASC
 ENDM
 
 ;-----------------------------------------------------;
+;显示内容,并且换行
+;-----------------------------------------------------;
+PRINTLN	MACRO	ASC
+  PRINT ASC
+	MOV	AH, 9
+	LEA	DX, CR
+	INT	21H
+  LEA	DX, LF
+	INT	21H
+ENDM
+
+;-----------------------------------------------------;
 ;输入字符串
 ;-----------------------------------------------------;
 INPUT	MACRO	ASC
   LEA DX, ASC
-  MOV AH,0AH
+  MOV AH, 0AH
   INT 21H
 ENDM
 
@@ -58,6 +70,31 @@ M2:
 ENDM
 
 ;-----------------------------------------------------;
+;16位二进制转换成十进制数
+;输入:
+;    ASC: ASCII 码
+;    BIN: 转化之后的二进制形式
+;-----------------------------------------------------;
+BIN_DEC	MACRO	ASC, BIN
+	LOCAL	L1,L2
+
+	LEA	SI,ASC+4
+	MOV	AX,BIN
+	MOV	CX,10
+L1:
+	CMP	AX,0
+	JE	L2
+	MOV	DX,0
+	DIV	CX
+	OR	DL,30H
+	MOV	[SI],DL
+	DEC	SI
+	JMP	SHORT	L1
+L2:
+	NOP
+ENDM
+
+;-----------------------------------------------------;
 ;程序返回
 ;-----------------------------------------------------;
 RETURN	MACRO
@@ -76,7 +113,7 @@ STACKSG ENDS
 DATASG SEGMENT
   inputMsg DB 'Please input n (n<=10):$'
   inputErr DB 'Error: n should be in range [1, 10]$'
-  numASC DB 2 DUP(?)
+  numASC DB 5 DUP(?)
   numBIN DW ?         ;输入数字的二进制
 DATASG ENDS
 ;-------------------------数据段-----------------------;
@@ -89,11 +126,11 @@ MAIN PROC FAR
   MOV DS, AX
 
   PRINT inputMsg  ;输入数字提示符号
-  INPUT numASC
+  INPUT numASC    ;输入数字
 
-
-  RETURN
+  RETURN          ;调用程序返回宏定义
 MAIN ENDP
+
 CODESG ENDS
 END MAIN
 ;-------------------------代码段-----------------------;
