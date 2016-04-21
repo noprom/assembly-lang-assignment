@@ -8,6 +8,10 @@ HUANH MACRO
   MOV DL, 0AH
   INT 21H
 ENDM
+;-------------------------堆栈段-----------------------;
+STACKSG SEGMENT STACK 'S'
+  DW 64 DUP('ST')
+STACKSG ENDS
 ;-----------------------------------------------------;
 ;数据段定义
 ;-----------------------------------------------------;
@@ -28,7 +32,7 @@ DATA ENDS
 ;代码段
 ;-----------------------------------------------------;
 CODE SEGMENT
-  ASSUME CS:CODE,DS:DATA
+  ASSUME CS:CODE,DS:DATA,SS:STACKSG
 ;-----------------------------------------------------;
 ;输入子程序,数字存放在BP中
 ;-----------------------------------------------------;
@@ -78,7 +82,7 @@ MZTJ: HUANH
 
   HUANH                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
-  CALL Showspace        ; 显示前面的空格
+  ;CALL Showspace        ; 显示前面的空格
   MOV DL, '1'           ; 输出第一个1
   MOV AH, 2
   INT 21H
@@ -105,13 +109,14 @@ yhsj:
   HUANH
   DEC BP
   MOV AX, BP
-  CALL Showspace        ; 控制首个数字前面的空格
+  ;CALL Showspace        ; 控制首个数字前面的空格
   MOV DL, '1'           ; 首个数字为1
   MOV AH, 2
   INT 21H
   MOV DX,OFFSET BETWEEN
   MOV AH,9
   INT 21H
+
   MOV AX,1
   PUSH b
   CALL Calculate
@@ -123,7 +128,7 @@ yhsj:
   DEC b
   CMP b, 2
   JZ ok3
-  CALL fyhsj
+  ;CALL fyhsj
 ok3:HUANH
   INC a
   MOV AX, a
@@ -215,7 +220,7 @@ ShowNum:
   CMP AX, 0
   JZ ok2           ; 除法运算是否完毕
   INC d            ; 此处d为位数，以确定输出的空格数
-  DIV BX           ; 除以10，整数商存在AL，余数存在AH
+  DIV BL           ; 除以10，整数商存在AL，余数存在AH
   PUSH AX
   AND AX, 00FFH    ; 屏蔽高八位，取商
   CALL SHOWNum
