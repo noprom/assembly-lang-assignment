@@ -60,12 +60,11 @@ DATA SEGMENT
   RESULT DB 'The YiangHui triangle:$'
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'N must in the range of [1, 10]$'
-  AHEAD DB '   $'         ;第一种是首数字1之前的空格
-  BETWEEN DB '      $'    ;第二种是首数字1后面的空格
-  BACK DB ' $'            ;第三种是和需显示的数字位数相关的空格
+  BETWEEN DB '     $'     ;第1种是首数字1之后的空格
+  BACK DB ' $'            ;第2种是和需显示的数字位数相关的空格
   a DW ?               ;a为阶数
   b DW ?               ;b为行数
-  c DW ?
+  c DW ?               ;c为计算时每一项的中间除数,依次递增
   d DW ?               ;记录位数，用来控制空格的数目
 DATA ENDS
 ;-----------------------------------------------------;
