@@ -80,9 +80,7 @@ MAIN:
   CMP BP,15             ; 输入的数存在BP，与15比较
   JB MZTJ               ; 如果输入的数字<15则满足条件，允许执行
   HUANH                 ; 否则换行
-  MOV DX, OFFSET ERROR  ; 否则提示错误的输入信息
-  MOV AH,9
-  INT 21H
+  PRINT ERROR           ; 否则提示错误的输入信息
   HUANH                 ; 继续换行
   JMP MAIN              ; 无条件跳转到MAIN，重新开始
 
