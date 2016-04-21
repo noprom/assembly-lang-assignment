@@ -153,10 +153,10 @@ MAIN PROC FAR
   INPUT numASC    ;输入数字
   ASC_BIN numASC, numBIN  ;把输入的ASCII码转化为二进制保存到numBIN中
 	ENTER						;回车换行
-	
+	;JUDGE_INPUT numBIN      ;判断输入的数据是否合法
+
   MOV BX, numBIN
   CALL bin2dec                      ;输出numB的值
-  ;JUDGE_INPUT numBIN      ;判断输入的数据是否合法
   RETURN          ;调用程序返回宏定义
 MAIN ENDP
 
