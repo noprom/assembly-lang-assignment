@@ -152,33 +152,16 @@ yhsj:
 ;-----------------------------------------------------;
 input1:             ; 判断是否还需要继续输入
   HUANH
-  MOV DX,OFFSET CON ; 显示提问字符串,继续?
-  MOV AH,9
-  INT 21H
+  PRINT CON         ; 显示提问字符串,继续?
   MOV AH,1          ; 键盘输入数据
   INT 21H
-  CMP AL,59H        ; 判断是否继续
+  CMP AL, 59H        ; 判断是否继续
   JNZ exit1
   HUANH
   JMP NEAR PTR MAIN ; 段内直接近转移,可以转移到段内
 exit1:              ; 不继续输入则退出程序
   MOV AH,4CH
   INT 21H
-;-----------------------------------------------------;
-;输出空格模块
-;-----------------------------------------------------;
-Showspace:              ; 首行显示空格，空格数即为输入的阶数
-  MOV BX, AX
-  MOV AH, 9
-  MOV DX,OFFSET AHEAD
-nexts:
-  CMP BX, 0             ; BX减1，控制输出的空格数
-  JZ dones
-  INT 21H
-  DEC BX
-  JMP nexts
-dones:
-  RET
 ;-----------------------------------------------------;
 ;核心计算模块
 ;-----------------------------------------------------;
@@ -194,7 +177,7 @@ Calculate: DEC b    ; b每次减1相乘
   CALL ShowNum
   MOV AX,6          ; 预设，总共显示的空格数为6个单位
   SUB AX,d          ; 还需显示多少空格
-  CALL Showspace1
+  CALL Showspace
   POP AX
   CALL Calculate    ; 继续执行
 ok1:
@@ -221,7 +204,7 @@ ok2:
 ;-----------------------------------------------------;
 ;输出空格模块
 ;-----------------------------------------------------;
-Showspace1:
+Showspace:
   MOV BX, AX
   MOV AH, 9
   MOV DX, OFFSET BACK
