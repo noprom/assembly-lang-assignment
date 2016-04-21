@@ -3,12 +3,26 @@
 ;; Title: 实验二(1):计算杨辉三角形的前 n(n<=10)行,并显示在屏幕上
 
 ;-----------------------------------------------------;
-;显示内容
+;输出一个字符串的内容
 ;-----------------------------------------------------;
 PRINT	MACRO	ASC
 	MOV	AH, 9
 	LEA	DX, ASC
 	INT	21H
+ENDM
+
+;-----------------------------------------------------;
+;输出一个字符串的内容,并且换行
+;-----------------------------------------------------;
+PRINTLN	MACRO	ASC
+	MOV	AH, 9
+	LEA	DX, ASC
+	INT	21H
+  MOV AH, 2
+  MOV DL, 0DH
+  INT 21H
+  MOV DL, 0AH
+  INT 21H
 ENDM
 
 ;-----------------------------------------------------;
@@ -79,16 +93,11 @@ MAIN:
   CALL SHURU            ; 调用输入函数,显示输入的数
   CMP BP,15             ; 输入的数存在BP，与15比较
   JB MZTJ               ; 如果输入的数字<15则满足条件，允许执行
-  HUANH                 ; 否则换行
-  PRINT ERROR           ; 否则提示错误的输入信息
-  HUANH                 ; 继续换行
+  PRINTLN ERROR         ; 否则提示错误的输入信息
   JMP MAIN              ; 无条件跳转到MAIN，重新开始
 
 MZTJ: HUANH
-  MOV DX, OFFSET RESULT ; 显示提示字符串
-  MOV AH, 9
-  INT 21H
-
+  PRINT RESULT          ; 显示提示字符串
   HUANH                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   ;CALL Showspace        ; 显示前面的空格
