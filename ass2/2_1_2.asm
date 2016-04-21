@@ -152,7 +152,26 @@ exit1:              ; 不继续输入则退出程序
 ;输出反杨辉三角
 ;-----------------------------------------------------;
 fyhsj:
-  
+  MOV C, 1
+  HUANH
+  INC BP
+  MOV AX, BP
+  CALL Showspace
+  MOV DL, '1'
+  MOV AH, 2
+  INT 21H
+  MOV DX, OFFSET BETWEEN
+  MOV AH, 9
+  INT 21H
+  MOV AX, 1
+  DEC b
+  PUSH b
+  CALL Calculate
+  POP b
+  INC CX
+  CMP CX, a
+  JB fyhsj
+  RET
 ;-----------------------------------------------------;
 ;输出空格模块
 ;-----------------------------------------------------;
