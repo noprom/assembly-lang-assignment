@@ -55,22 +55,22 @@ START:
   MOV AX,DATA
   MOV DS,AX
 ;-----------------------------------------------------;
-;判断输入的数字是否在允许的范围之内
+;判断输入的数字是否在允许的范围之内,直到满足条件才能进行下一步
 ;-----------------------------------------------------;
 MAIN:
-  MOV DX,OFFSET MSG ;输出字符串，请输入一个数
-  MOV AH,9   ; 9号功能调用，输出字符串
+  MOV DX,OFFSET MSG     ; 输出字符串，请输入一个数
+  MOV AH,9              ; 9号功能调用，输出字符串
   INT 21H
-  CALL SHURU ; 调用输入函数,显示输入的数
-  CMP BP,15  ; 输入的数存在BP，与15比较
-  JB MZTJ    ; 满足条件，允许执行
-  HUANH      ; 否则换行
+  CALL SHURU            ; 调用输入函数,显示输入的数
+  CMP BP,15             ; 输入的数存在BP，与15比较
+  JB MZTJ               ; 如果输入的数字<15则满足条件，允许执行
+  HUANH                 ; 否则换行
   MOV DX, OFFSET ERROR  ; 否则提示错误的输入信息
   MOV AH,9
   INT 21H
-  HUANH ; 继续换行
-  JMP MAIN ; 无条件跳转到MAIN，重新开始
-  AX d,0 ShowNum AX,6 AX,d Showspace1 AX Calculate BX, 10 AX, 0 ok2 d BL AX AX, 00FFH SHOWNum DX DL, DH AH, 2 21H BX, AX AH, 9 DX,OFFSET BACK BX, 0 done 21H BX next 20
+  HUANH                 ; 继续换行
+  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+
 MZTJ: HUANH
   MOV
   MOV
