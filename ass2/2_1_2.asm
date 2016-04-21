@@ -1,5 +1,5 @@
 ;-----------------------------------------------------;
-;输入宏定义
+;换行宏定义
 ;-----------------------------------------------------;
 HUANH MACRO
   MOV AH, 2
@@ -16,13 +16,13 @@ DATA SEGMENT
   RESULT DB 'The YiangHui triangle:$'
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'Data out of range!$'
-  AHEAD DB ' $'         ;第一种是首数字1之前的空格
-  BETWEEN DB ' $'       ;第二种是首数字1后面的空格
-  BACK DB ' $'          ;第三种是和需显示的数字位数相关的空格
-  a DW ?
-  b DW ?
-  cc DW ?
-  d DW ?
+  AHEAD DB '   $'         ;第一种是首数字1之前的空格
+  BETWEEN DB '      $'       ;第二种是首数字1后面的空格
+  BACK DB '$'          ;第三种是和需显示的数字位数相关的空格
+  a DW ?               ;a为阶数
+  b DW ?               ;b为行数
+  c DW ?
+  d DW ?               ;记录位数，用来控制空格的数目
 DATA ENDS
 ;-----------------------------------------------------;
 ;代码段
@@ -30,22 +30,22 @@ DATA ENDS
 CODE SEGMENT
   ASSUME CS:CODE,DS:DATA
 ;-----------------------------------------------------;
-;输入子程序
+;输入子程序,数字存放在BP中
 ;-----------------------------------------------------;
 SHURU PROC
   XOR BP,BP ;BP清零
   MOV BX,10
-  MOV CX,3
+  MOV CX,3  ;控制输入的位数,2位数加上一个回车
 input:
-  MOV AH,1
+  MOV AH,1  ;从键盘读入数据
   INT 21H
   CMP AL,0DH
   JZ OK       ;如果回车则输入完毕
-  SUB AL,30H  ;转为二进制
-  CBW
-  XCHG AX,BP
-  MUL BX
-  ADD BP,AX
+  SUB AL,30H  ;转为十六位二进制数
+  CBW         ;字节扩展为字
+  XCHG AX,BP  ;交换到AX中
+  MUL BX      ;扩大十倍
+  ADD BP,AX   ;加一位
   LOOP input
 OK:
   RET
