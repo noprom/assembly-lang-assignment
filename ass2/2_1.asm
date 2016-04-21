@@ -137,14 +137,8 @@ yhsj:
   HUANH
   DEC BP
   MOV AX, BP
-  ;CALL Showspace        ; 控制首个数字前面的空格
-  MOV DL, '1'           ; 首个数字为1
-  MOV AH, 2
-  INT 21H
-  MOV DX,OFFSET BETWEEN
-  MOV AH,9
-  INT 21H
-
+  PRINTCHAR '1'        ; 首个数字为1
+  PRINT BETWEEN
   MOV AX,1
   PUSH b
   CALL Calculate
