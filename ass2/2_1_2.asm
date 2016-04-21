@@ -175,10 +175,10 @@ fyhsj:
 ;-----------------------------------------------------;
 ;输出空格模块
 ;-----------------------------------------------------;
-Showspace:
+Showspace:              ; 首行显示空格，空格数即为输入的阶数
   MOV BX, AX
   MOV AH, 9
-  MOV DX,OFFSET AHEAD   ; 首行显示空格，空格数即为输入的阶数
+  MOV DX,OFFSET AHEAD
 nexts:
   CMP BX, 0             ; BX减1，控制输出的空格数
   JZ dones
@@ -192,8 +192,8 @@ dones:
 ;-----------------------------------------------------;
 Calculate: DEC b    ; b每次减1相乘
   MUL b
-  DIV cc            ; 除以cc，再加1
-  INC cc
+  DIV c             ; 除以c，再加1
+  INC c
   CMP b,0           ; b是否为0
   JZ ok1
 
@@ -216,10 +216,9 @@ ShowNum:
   JZ ok2           ; 除法运算是否完毕
   INC d            ; 此处d为位数，以确定输出的空格数
   DIV BX           ; 除以10，整数商存在AL，余数存在AH
-  AND AX, 00FFH    ; 屏蔽高八位，取商
   PUSH AX
+  AND AX, 00FFH    ; 屏蔽高八位，取商
   CALL SHOWNum
-
   POP DX
   MOV DL, DH       ; 取出高八位，即为要显示的余数
   OR DL, 30H       ; 转为ASCII码
@@ -233,7 +232,7 @@ ok2:
 Showspace1:
   MOV BX, AX
   MOV AH, 9
-  MOV DX,OFFSET BACK
+  MOV DX, OFFSET BACK
 next:
   CMP BX, 0
   JZ done
