@@ -72,30 +72,33 @@ MAIN:
   JMP MAIN              ; 无条件跳转到MAIN，重新开始
 
 MZTJ: HUANH
-  MOV
-  MOV
-  INT
-  HUANH
-  MOV
-  CALL
-  MOV
-  MOV
-  INT
-  CMP
-  JZ
-  MOV
-  MOV
-  MOV
-  DEC
-  CALL
-  exit: HUANH
-  MOV
-  CALL
-  MOV
-  MOV
-  INT
-  JMP
-  yhsj: MOV
+  MOV DX, OFFSET RESULT ; 显示提示字符串
+  MOV AH, 9
+  INT 21H
+
+  HUANH                 ; 换行
+  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
+  CALL Showspace        ; 显示前面的空格
+  MOV DL, '1'           ; 输出第一个1
+  MOV AH, 2
+  INT 21H
+  CMP BP, 1             ; 将阶数与1进行比较
+  JZ  exit              ; 小于则直接退出
+  MOV b, 2              ; b=2
+  MOV CX, BP            ; 此时CX=阶数
+  MOV a, BP             ; a=阶数
+  DEC a
+  CALL yhsj             ; 调用yhsj子程序
+
+exit: HUANH
+  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
+  CALL Showspace        ; 显示空格
+  MOV DL, '1'           ; 输出第一个1
+  MOV AH, 2
+  INT 21H
+  JMP NEAR PTR input1
+  
+yhsj: MOV
   HUANH
   DEC
   MOV
