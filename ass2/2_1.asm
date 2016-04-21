@@ -118,7 +118,7 @@ MZTJ: HUANH
   HUANH                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   PRINTCHAR '1'         ; 输出第一个1
-  CMP BP, 1             ; 将阶数与1进行比较
+  CMP BP, 2             ; 将阶数与2进行比较
   JB  exit              ; 小于则直接退出
   MOV b, 2              ; b=2
   MOV CX, BP            ; 此时CX=阶数
@@ -127,10 +127,8 @@ MZTJ: HUANH
   CALL yhsj             ; 调用yhsj子程序
 
 exit:
-  PRINTLN ERROR         ; 否则提示错误的输入信息
-  JMP MAIN              ; 无条件跳转到MAIN，重新开始
-  ;HUANH
-  ;JMP NEAR PTR input1
+  HUANH
+  JMP NEAR PTR input1
 ;-----------------------------------------------------;
 ;输出杨辉三角
 ;-----------------------------------------------------;
