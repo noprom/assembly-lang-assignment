@@ -147,17 +147,6 @@ yhsj:
   DEC CX
   CMP CX,1
   JA yhsj
-  DEC b
-  CMP b, 2
-  JZ ok3
-ok3:
-  ;HUANH
-  ;INC a
-  ;MOV AX, a
-  ;CALL Showspace
-  ;MOV DL, '1'
-  ;MOV AH, 2
-  ;INT 21H
 ;-----------------------------------------------------;
 ;输入询问模块
 ;-----------------------------------------------------;
