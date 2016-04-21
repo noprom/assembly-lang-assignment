@@ -97,30 +97,44 @@ exit: HUANH
   MOV AH, 2
   INT 21H
   JMP NEAR PTR input1
-  
-yhsj: MOV
+;-----------------------------------------------------;
+;输出杨辉三角
+;-----------------------------------------------------;
+yhsj:
+  MOV c, 1
   HUANH
-  DEC
-  MOV
-  CALL
-  MOV
-  DX,OFFSET ERROR AH,9 21H MAIN DX,OFFSET RESULT AH,9 21H AX,BP Showspace DL,'1' AH,2 21H BP,1 exit b,2 CX,BP a,BP a yhsj AX,BP Showspace DL,'1' AH,2 21H NEAR PTR input1 cc,1 BP AX,BP Showspace DL,'1' 18
-
-  MOV AH,2
+  DEC BP
+  MOV AX, BP
+  CALL Showspace        ; 控制首个数字前面的空格
+  MOV DL, '1'           ; 首个数字为1
+  MOV AH, 2
   INT 21H
-  MOV DX,OFFSET BETWEEN MOV AH,9
+  MOV DX,OFFSET BETWEEN
+  MOV AH,9
   INT 21H
   MOV AX,1
   PUSH b
   CALL Calculate
   POP b
-  INC b DEC CX
+  INC b
+  DEC CX
   CMP CX,1
   JA yhsj
+  DEC b
+  CMP b, 2
+  JZ ok3
+  CALL fyhsj
+ok3:HUANH
+  INC a
+  MOV AX, a
+  CALL Showspace
+  MOV DL, '1'
+  MOV AH, 2
+  INT 21H
 ;-----------------------------------------------------;
 ;输入询问模块
 ;-----------------------------------------------------;
-input1:
+input1:             ; 判断是否还需要继续输入
   HUANH
   MOV DX,OFFSET CON ; 显示提问字符串,继续?
   MOV AH,9
@@ -134,6 +148,11 @@ input1:
 exit1:              ; 不继续输入则退出程序
   MOV AH,4CH
   INT 21H
+;-----------------------------------------------------;
+;输出反杨辉三角
+;-----------------------------------------------------;
+fyhsj:
+  
 ;-----------------------------------------------------;
 ;输出空格模块
 ;-----------------------------------------------------;
