@@ -97,9 +97,9 @@ MZTJ: HUANH
 exit: HUANH
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   ;CALL Showspace        ; 显示空格
-  MOV DL, '1'           ; 输出第一个1
-  MOV AH, 2
-  INT 21H
+  ;MOV DL, '1'           ; 输出第一个1
+  ;MOV AH, 2
+  ;INT 21H
   JMP NEAR PTR input1
 ;-----------------------------------------------------;
 ;输出杨辉三角
@@ -129,13 +129,14 @@ yhsj:
   CMP b, 2
   JZ ok3
   ;CALL fyhsj
-ok3:HUANH
-  INC a
-  MOV AX, a
-  CALL Showspace
-  MOV DL, '1'
-  MOV AH, 2
-  INT 21H
+ok3:
+  ;HUANH
+  ;INC a
+  ;MOV AX, a
+  ;CALL Showspace
+  ;MOV DL, '1'
+  ;MOV AH, 2
+  ;INT 21H
 ;-----------------------------------------------------;
 ;输入询问模块
 ;-----------------------------------------------------;
