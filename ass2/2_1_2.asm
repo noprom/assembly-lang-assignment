@@ -3,9 +3,9 @@
 ;-----------------------------------------------------;
 HUANH MACRO
   MOV AH, 2
-  MOV DL, 13
+  MOV DL, 0DH
   INT 21H
-  MOV DL, 10
+  MOV DL, 0AH
   INT 21H
 ENDM
 ;-----------------------------------------------------;
@@ -70,7 +70,7 @@ MAIN:
   INT 21H
   HUANH ; 继续换行
   JMP MAIN ; 无条件跳转到MAIN，重新开始
-
+  AX d,0 ShowNum AX,6 AX,d Showspace1 AX Calculate BX, 10 AX, 0 ok2 d BL AX AX, 00FFH SHOWNum DX DL, DH AH, 2 21H BX, AX AH, 9 DX,OFFSET BACK BX, 0 done 21H BX next 20
 MZTJ: HUANH
   MOV
   MOV
@@ -203,4 +203,3 @@ done:
   RET
 CODE ENDS
 END START
-AX d,0 ShowNum AX,6 AX,d Showspace1 AX Calculate BX, 10 AX, 0 ok2 d BL AX AX, 00FFH SHOWNum DX DL, DH AH, 2 21H BX, AX AH, 9 DX,OFFSET BACK BX, 0 done 21H BX next 20
