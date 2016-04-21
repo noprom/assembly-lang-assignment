@@ -56,10 +56,10 @@ STACKSG ENDS
 ;数据段定义
 ;-----------------------------------------------------;
 DATA SEGMENT
-  MSG DB 'Please input a number: $'
+  MSG DB 'Please input n(n<=10): $'
   RESULT DB 'The YiangHui triangle:$'
   CON DB 'Do you want to continue?(Y/N): $'
-  ERROR DB 'Data out of range!$'
+  ERROR DB 'N must in the range of [1, 10]$'
   AHEAD DB '   $'         ;第一种是首数字1之前的空格
   BETWEEN DB '      $'    ;第二种是首数字1后面的空格
   BACK DB ' $'            ;第三种是和需显示的数字位数相关的空格
@@ -104,8 +104,12 @@ START:
 MAIN:
   PRINT MSG             ; 输出字符串，请输入一个数
   CALL SHURU            ; 调用输入函数,显示输入的数
-  CMP BP,15             ; 输入的数存在BP，与15比较
-  JB MZTJ               ; 如果输入的数字<15则满足条件，允许执行
+  CMP BP, 0             ; 输入的数存在BP，与0比较
+  JG J1                 ; 如果输入的数字>0,继续判断
+  PRINTLN ERROR         ; 否则提示错误的输入信息
+  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+J1:CMP BP,11            ; 输入的数存在BP，与11比较
+  JB MZTJ               ; 如果输入的数字<11则满足条件，允许执行
   PRINTLN ERROR         ; 否则提示错误的输入信息
   JMP MAIN              ; 无条件跳转到MAIN，重新开始
 
@@ -115,15 +119,18 @@ MZTJ: HUANH
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   PRINTCHAR '1'         ; 输出第一个1
   CMP BP, 1             ; 将阶数与1进行比较
-  JZ  exit              ; 小于则直接退出
+  JB  exit              ; 小于则直接退出
   MOV b, 2              ; b=2
   MOV CX, BP            ; 此时CX=阶数
   MOV a, BP             ; a=阶数
   DEC a
   CALL yhsj             ; 调用yhsj子程序
 
-exit: HUANH
-  JMP NEAR PTR input1
+exit:
+  PRINTLN ERROR         ; 否则提示错误的输入信息
+  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+  ;HUANH
+  ;JMP NEAR PTR input1
 ;-----------------------------------------------------;
 ;输出杨辉三角
 ;-----------------------------------------------------;
