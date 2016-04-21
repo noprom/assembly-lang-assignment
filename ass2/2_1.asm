@@ -21,8 +21,8 @@ DATA SEGMENT
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'Data out of range!$'
   AHEAD DB '   $'         ;第一种是首数字1之前的空格
-  BETWEEN DB '      $'       ;第二种是首数字1后面的空格
-  BACK DB '$'          ;第三种是和需显示的数字位数相关的空格
+  BETWEEN DB '      $'    ;第二种是首数字1后面的空格
+  BACK DB ' $'            ;第三种是和需显示的数字位数相关的空格
   a DW ?               ;a为阶数
   b DW ?               ;b为行数
   c DW ?
@@ -96,7 +96,7 @@ MZTJ: HUANH
 
 exit: HUANH
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
-  CALL Showspace        ; 显示空格
+  ;CALL Showspace        ; 显示空格
   MOV DL, '1'           ; 输出第一个1
   MOV AH, 2
   INT 21H
