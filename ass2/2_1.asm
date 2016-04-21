@@ -17,17 +17,14 @@ PRINT	MACRO	ASC
 ENDM
 
 ;-----------------------------------------------------;
-;显示内容,并且换行
+;回车换行
 ;-----------------------------------------------------;
-PRINTLN	MACRO	ASC
-  MOV	AH, 9
-	LEA	DX, ASC
-	INT	21H
-	MOV	AH, 9
-	LEA	DX, CR
-	INT	21H
-  LEA	DX, LF
-	INT	21H
+ENTER MACRO
+  MOV AH, 2
+  MOV DL, CR
+  INT 21H
+  MOV DL, LF
+  INT 21H
 ENDM
 
 ;-----------------------------------------------------;
@@ -155,15 +152,10 @@ MAIN PROC FAR
   PRINT inputMsg  ;输入数字提示符号
   INPUT numASC    ;输入数字
   ASC_BIN numASC, numBIN  ;把输入的ASCII码转化为二进制保存到numBIN中
-  ;换行回车
-  mov ah, 2
-  mov dl, CR
-  int 21h
-  mov dl, LF
-  int 21h                           ;以上代码输出换行回车
-
-  mov bx, numBIN
-  call bin2dec                      ;输出numB的值
+	ENTER						;回车换行
+	
+  MOV BX, numBIN
+  CALL bin2dec                      ;输出numB的值
   ;JUDGE_INPUT numBIN      ;判断输入的数据是否合法
   RETURN          ;调用程序返回宏定义
 MAIN ENDP
