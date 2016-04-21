@@ -113,10 +113,7 @@ MZTJ: HUANH
   PRINT RESULT          ; 显示提示字符串
   HUANH                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
-  PRINTCHAR '1'
-  ;MOV DL, '1'           ; 输出第一个1
-  ;MOV AH, 2
-  ;INT 21H
+  PRINTCHAR '1'         ; 输出第一个1
   CMP BP, 1             ; 将阶数与1进行比较
   JZ  exit              ; 小于则直接退出
   MOV b, 2              ; b=2
@@ -126,11 +123,6 @@ MZTJ: HUANH
   CALL yhsj             ; 调用yhsj子程序
 
 exit: HUANH
-  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
-  ;CALL Showspace        ; 显示空格
-  ;MOV DL, '1'           ; 输出第一个1
-  ;MOV AH, 2
-  ;INT 21H
   JMP NEAR PTR input1
 ;-----------------------------------------------------;
 ;输出杨辉三角
