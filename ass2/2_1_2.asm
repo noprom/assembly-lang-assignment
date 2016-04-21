@@ -16,9 +16,9 @@ DATA SEGMENT
   RESULT DB 'The YiangHui triangle:$'
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'Data out of range!$'
-  AHEAD DB ' $'
-  BETWEEN DB ' $'
-  BACK DB ' $'
+  AHEAD DB ' $'         ;第一种是首数字1之前的空格
+  BETWEEN DB ' $'       ;第二种是首数字1后面的空格
+  BACK DB ' $'          ;第三种是和需显示的数字位数相关的空格
   a DW ?
   b DW ?
   cc DW ?
@@ -128,16 +128,18 @@ input1:
   JNZ exit1
   HUANH
   JMP NEAR PTR MAIN ; 段内直接近转移,可以转移到段内
-exit1:              ;不继续输入则退出程序
+exit1:              ; 不继续输入则退出程序
   MOV AH,4CH
   INT 21H
-
+;-----------------------------------------------------;
+;输出空格模块
+;-----------------------------------------------------;
 Showspace:
   MOV BX, AX
   MOV AH, 9
-  MOV DX,OFFSET AHEAD
+  MOV DX,OFFSET AHEAD   ; 首行显示空格，空格数即为输入的阶数
 nexts:
-  CMP BX, 0
+  CMP BX, 0             ; BX减1，控制输出的空格数
   JZ dones
   INT 21H
   DEC BX
@@ -184,16 +186,20 @@ ShowNum:
   INT 21H
 ok2:
   RET
-
-Showspace1:MOV
-  MOV
-  MOV
-  next: CMP
-  JZ
-  INT
-  DEC
-  JMP
-  done:
+;-----------------------------------------------------;
+;输出空格模块
+;-----------------------------------------------------;
+Showspace1:
+  MOV BX, AX
+  MOV AH, 9
+  MOV DX,OFFSET BACK
+next:
+  CMP BX, 0
+  JZ done
+  INT 21H
+  DEC BX
+  JMP next
+done:
   RET
 CODE ENDS
 END START
