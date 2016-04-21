@@ -1,218 +1,245 @@
-;; Author: noprom <tyee.noprom@qq.com>
-;; Data: 2016/4/18 9:33AM
-;; Title: 实验二(1):计算杨辉三角形的前 n(n<=10)行,并显示在屏幕上
-
-;------------------------定义符号----------------------;
-CR EQU 0DH                            ;回车符的ASCII值
-LF EQU 0AH                            ;换行符的ASCII值
-
-;-----------------------宏定义区域---------------------;
 ;-----------------------------------------------------;
-;显示内容
+;换行宏定义
 ;-----------------------------------------------------;
-PRINT	MACRO	ASC
-	MOV	AH, 9
-	LEA	DX, ASC
-	INT	21H
-ENDM
-
-;-----------------------------------------------------;
-;回车换行
-;-----------------------------------------------------;
-ENTER MACRO
+HUANH MACRO
   MOV AH, 2
-  MOV DL, CR
+  MOV DL, 0DH
   INT 21H
-  MOV DL, LF
-  INT 21H
-ENDM
-
-;-----------------------------------------------------;
-;输入字符串
-;-----------------------------------------------------;
-INPUT	MACRO	ASC
-  MOV AH, 0AH     ;接受一串字符串
-  LEA DX, ASC
+  MOV DL, 0AH
   INT 21H
 ENDM
+;-----------------------------------------------------;
+;数据段定义
+;-----------------------------------------------------;
+DATA SEGMENT
+  MSG DB 'Please input a number: $'
+  RESULT DB 'The YiangHui triangle:$'
+  CON DB 'Do you want to continue?(Y/N): $'
+  ERROR DB 'Data out of range!$'
+  AHEAD DB '   $'         ;第一种是首数字1之前的空格
+  BETWEEN DB '      $'       ;第二种是首数字1后面的空格
+  BACK DB '$'          ;第三种是和需显示的数字位数相关的空格
+  a DW ?               ;a为阶数
+  b DW ?               ;b为行数
+  c DW ?
+  d DW ?               ;记录位数，用来控制空格的数目
+DATA ENDS
+;-----------------------------------------------------;
+;代码段
+;-----------------------------------------------------;
+CODE SEGMENT
+  ASSUME CS:CODE,DS:DATA
+;-----------------------------------------------------;
+;输入子程序,数字存放在BP中
+;-----------------------------------------------------;
+SHURU PROC
+  XOR BP,BP ;BP清零
+  MOV BX,10
+  MOV CX,3  ;控制输入的位数,2位数加上一个回车
+input:
+  MOV AH,1  ;从键盘读入数据
+  INT 21H
+  CMP AL,0DH
+  JZ OK       ;如果回车则输入完毕
+  SUB AL,30H  ;转为十六位二进制数
+  CBW         ;字节扩展为字
+  XCHG AX,BP  ;交换到AX中
+  MUL BX      ;扩大十倍
+  ADD BP,AX   ;加一位
+  LOOP input
+OK:
+  RET
+SHURU ENDP
 
+START:
+  MOV AX,DATA
+  MOV DS,AX
 ;-----------------------------------------------------;
-;判断输入数据是否合法
+;判断输入的数字是否在允许的范围之内,直到满足条件才能进行下一步
 ;-----------------------------------------------------;
-JUDGE_INPUT MACRO NUM
+MAIN:
+  MOV DX,OFFSET MSG     ; 输出字符串，请输入一个数
+  MOV AH,9              ; 9号功能调用，输出字符串
+  INT 21H
+  CALL SHURU            ; 调用输入函数,显示输入的数
+  CMP BP,15             ; 输入的数存在BP，与15比较
+  JB MZTJ               ; 如果输入的数字<15则满足条件，允许执行
+  HUANH                 ; 否则换行
+  MOV DX, OFFSET ERROR  ; 否则提示错误的输入信息
+  MOV AH,9
+  INT 21H
+  HUANH                 ; 继续换行
+  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+
+MZTJ: HUANH
+  MOV DX, OFFSET RESULT ; 显示提示字符串
+  MOV AH, 9
+  INT 21H
+
+  HUANH                 ; 换行
+  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
+  CALL Showspace        ; 显示前面的空格
+  MOV DL, '1'           ; 输出第一个1
+  MOV AH, 2
+  INT 21H
+  CMP BP, 1             ; 将阶数与1进行比较
+  JZ  exit              ; 小于则直接退出
+  MOV b, 2              ; b=2
+  MOV CX, BP            ; 此时CX=阶数
+  MOV a, BP             ; a=阶数
+  DEC a
+  CALL yhsj             ; 调用yhsj子程序
+
+exit: HUANH
+  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
+  CALL Showspace        ; 显示空格
+  MOV DL, '1'           ; 输出第一个1
+  MOV AH, 2
+  INT 21H
+  JMP NEAR PTR input1
+;-----------------------------------------------------;
+;输出杨辉三角
+;-----------------------------------------------------;
+yhsj:
+  MOV c, 1
+  HUANH
+  DEC BP
+  MOV AX, BP
+  CALL Showspace        ; 控制首个数字前面的空格
+  MOV DL, '1'           ; 首个数字为1
+  MOV AH, 2
+  INT 21H
+  MOV DX,OFFSET BETWEEN
+  MOV AH,9
+  INT 21H
+  MOV AX,1
+  PUSH b
+  CALL Calculate
+  POP b
+  INC b
+  DEC CX
+  CMP CX,1
+  JA yhsj
+  DEC b
+  CMP b, 2
+  JZ ok3
+  CALL fyhsj
+ok3:HUANH
+  INC a
+  MOV AX, a
+  CALL Showspace
+  MOV DL, '1'
+  MOV AH, 2
+  INT 21H
+;-----------------------------------------------------;
+;输入询问模块
+;-----------------------------------------------------;
+input1:             ; 判断是否还需要继续输入
+  HUANH
+  MOV DX,OFFSET CON ; 显示提问字符串,继续?
+  MOV AH,9
+  INT 21H
+  MOV AH,1          ; 键盘输入数据
+  INT 21H
+  CMP AL,59H        ; 判断是否继续
+  JNZ exit1
+  HUANH
+  JMP NEAR PTR MAIN ; 段内直接近转移,可以转移到段内
+exit1:              ; 不继续输入则退出程序
+  MOV AH,4CH
+  INT 21H
+;-----------------------------------------------------;
+;输出反杨辉三角
+;-----------------------------------------------------;
+fyhsj:
+  MOV C, 1
+  HUANH
+  INC BP
+  MOV AX, BP
+  CALL Showspace
+  MOV DL, '1'
+  MOV AH, 2
+  INT 21H
+  MOV DX, OFFSET BETWEEN
+  MOV AH, 9
+  INT 21H
+  MOV AX, 1
+  DEC b
+  PUSH b
+  CALL Calculate
+  POP b
+  INC CX
+  CMP CX, a
+  JB fyhsj
+  RET
+;-----------------------------------------------------;
+;输出空格模块
+;-----------------------------------------------------;
+Showspace:              ; 首行显示空格，空格数即为输入的阶数
+  MOV BX, AX
+  MOV AH, 9
+  MOV DX,OFFSET AHEAD
+nexts:
+  CMP BX, 0             ; BX减1，控制输出的空格数
+  JZ dones
+  INT 21H
+  DEC BX
+  JMP nexts
+dones:
+  RET
+;-----------------------------------------------------;
+;核心计算模块
+;-----------------------------------------------------;
+Calculate: DEC b    ; b每次减1相乘
+  MUL b
+  DIV c             ; 除以c，再加1
+  INC c
+  CMP b,0           ; b是否为0
+  JZ ok1
+
+  PUSH AX           ; 保存所得数据
+  MOV d,0           ; 此处d为位数，为了显示后面的空格
+  CALL ShowNum
+  MOV AX,6          ; 预设，总共显示的空格数为6个单位
+  SUB AX,d          ; 还需显示多少空格
+  CALL Showspace1
+  POP AX
+  CALL Calculate    ; 继续执行
+ok1:
+  RET
+;-----------------------------------------------------;
+;显示模块
+;-----------------------------------------------------;
+ShowNum:
+  MOV BX, 10       ; BX中存除数10
+  CMP AX, 0
+  JZ ok2           ; 除法运算是否完毕
+  INC d            ; 此处d为位数，以确定输出的空格数
+  DIV BX           ; 除以10，整数商存在AL，余数存在AH
   PUSH AX
-  MOV AX, NUM
-  CMP AX, 1
-  JL L
-  MOV AX, NUM
-  CMP AX, 10
-  JG G
-L: ;输入小于1
-  PRINT inputLower
-  POP AX
-  RETURN
-G: ;输入大于10
-  PRINT inputGreater
-  POP AX
-  RETURN
-
-ENDM
+  AND AX, 00FFH    ; 屏蔽高八位，取商
+  CALL SHOWNum
+  POP DX
+  MOV DL, DH       ; 取出高八位，即为要显示的余数
+  OR DL, 30H       ; 转为ASCII码
+  MOV AH, 2        ; 显示出数字
+  INT 21H
+ok2:
+  RET
 ;-----------------------------------------------------;
-;十进制数转换成16位二进制
-;输入:
-;    ASC: ASCII 码
-;    BIN: 转化之后的二进制形式
+;输出空格模块
 ;-----------------------------------------------------;
-ASC_BIN MACRO ASC, BIN
-  LOCAL M1, M2
-
-  LEA SI, ASC + 1		 ;建立输入缓冲区的地址指针
-  ;SI指向十进制数缓冲区，其中第一个字节存放要转
-  ;换的十进制位数，从第二个字节开始存放着十进制
-  ;数的ASCII码。AX中存放转换结果。
-
-  XOR   AX,AX
-  MOV   CL,[SI]
-  XOR   CH,CH     	;CX中为十进制位数
-  INC   SI
-  JCXZ  M2
-  M1:
-  MOV BX, 10
-  MUL BX  		      ;(AX)乘以10
-
-  MOV BL, [SI]		  ;得到一位十进制数的ASCII码
-  INC SI	    	    ;修改地址指针
-  AND BX,000FH		  ;把十进制数的ASCII码转换成十进制数
-  ADD AX,BX
-	LOOP M1
-  M2:
-  MOV BIN, AX		    ;存放输入的二进制值
-ENDM
-
-;-----------------------------------------------------;
-;16位二进制转换成十进制数
-;输入:
-;    ASC: ASCII 码
-;    BIN: 转化之后的二进制形式
-;-----------------------------------------------------;
-BIN_DEC	MACRO	BIN, ASC
-	LOCAL	L1,L2
-
-	LEA	SI,ASC+4
-	MOV	AX,BIN
-	MOV	CX,10
-  L1:
-	CMP	AX,0
-	JE	L2
-	MOV	DX,0
-	DIV	CX
-	OR	DL,30H
-	MOV	[SI],DL
-	DEC	SI
-	JMP	SHORT	L1
-  L2:
-	NOP
-ENDM
-
-;-----------------------------------------------------;
-;程序返回
-;-----------------------------------------------------;
-RETURN	MACRO
-	MOV	AX, 4C00H
-	INT	21H
-ENDM
-;-----------------------宏定义区域---------------------;
-
-;-------------------------堆栈段-----------------------;
-STACKSG SEGMENT STACK 'S'
-  DW 64 DUP('ST')
-STACKSG ENDS
-;-------------------------堆栈段-----------------------;
-
-;-------------------------数据段-----------------------;
-DATASG SEGMENT
-  inputMsg DB 'Please input n (n<=10):$'
-  inputErr DB 'Error: n should be in range [1, 10]$'
-  inputLower DB 'Error: n < 1$'
-  inputGreater DB 'Error: n > 10$'
-  resultMsg DB 'Result: $'
-  numASC DB 5 , ? , 5 DUP(?)
-  numBIN DW ?         ;输入数字的二进制
-  flag DB 0                           ;判断标志位
-DATASG ENDS
-;-------------------------数据段-----------------------;
-
-;-------------------------代码段-----------------------;
-CODESG SEGMENT
-  ASSUME CS: CODESG, DS: DATASG, SS: STACKSG
-MAIN PROC FAR
-  MOV AX, DATASG
-  MOV DS, AX
-
-  PRINT inputMsg  ;输入数字提示符号
-  INPUT numASC    ;输入数字
-  ASC_BIN numASC, numBIN  ;把输入的ASCII码转化为二进制保存到numBIN中
-	ENTER						;回车换行
-	;JUDGE_INPUT numBIN      ;判断输入的数据是否合法
-
-  MOV BX, numBIN
-  CALL bin2dec                      ;输出numB的值
-  RETURN          ;调用程序返回宏定义
-MAIN ENDP
-
-;----------------------二进制转十进制--------------------;
-bin2dec proc
-  mov flag, 0                         ;标志位清零
-
-  mov cx, 10000
-  call dec_div
-
-  mov cx, 1000
-  call dec_div
-
-  mov cx, 100
-  call dec_div
-
-  mov cx, 10
-  call dec_div
-
-  mov cx, 1
-  call dec_div
-
-  cmp flag, 0                       ;若flag为0则证明要输出的二进制数为0
-  jg 	exit
-  mov ah, 2 		                    ;若要输出的二进制数为0,则这个数不会被dec_div输出
-  MOV DL, '0' 		                  ;因此在这里输出0
-  INT 21h
-exit:
-  ret
-bin2dec endp
-;----------------------二进制转十进制--------------------;
-;------------------------dec_div-----------------------;
-dec_div proc
-  mov ax, bx
-  mov dx, 0
-
-  div cx
-  mov bx, dx
-
-  mov dl, al
-  add dl, 30h
-
-  cmp flag, 0
-  jg flag1 		                     ;flag为1,说明之前有非0位,直接输出
-  cmp dl, '0' 		                 ;flag非0,说明之前全部为0位,将当前位于0比较
-  je exit1   		                   ;当前位为0,不输出
-  mov flag, 1 		                 ;当前位不为0,将flag置1
-
-flag1:                             ;输出当前位
-  mov ah, 2
-  int 21h
-exit1:
-  ;跳转至此则不输出当前位
-  ret
-dec_div endp
-;------------------------dec_div-----------------------;
-CODESG ENDS
-END MAIN
-;-------------------------代码段-----------------------;
+Showspace1:
+  MOV BX, AX
+  MOV AH, 9
+  MOV DX, OFFSET BACK
+next:
+  CMP BX, 0
+  JZ done
+  INT 21H
+  DEC BX
+  JMP next
+done:
+  RET
+CODE ENDS
+END START
