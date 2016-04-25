@@ -31,11 +31,8 @@ PRINTLN	MACRO	ASC
 	MOV	AH, 9
 	LEA	DX, ASC
 	INT	21H
-  MOV AH, 2
-  MOV DL, CR
-  INT 21H
-  MOV DL, LF
-  INT 21H
+	PRINTCHAR CR
+  PRINTCHAR LF
 ENDM
 
 ;-----------------------------------------------------;
