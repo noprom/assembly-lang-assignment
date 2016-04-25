@@ -35,3 +35,46 @@ PRINTLNSTR MACRO ASC
   PRINTCHAR CR
   PRINTCHAR LF
 ENDM
+
+;-----------------------------------------------------;
+;返回程序
+;-----------------------------------------------------;
+RETURN MACRO
+	MOV AX, 4C00H
+  INT 21H
+ENDM
+
+;-----------------------------------------------------;
+;堆栈段
+;-----------------------------------------------------;
+STACKSG SEGMENT STACK 'S'
+  DW 64 DUP('ST')
+STACKSG ENDS
+
+;-----------------------------------------------------;
+;数据段
+;-----------------------------------------------------;
+DATASG SEGMENT
+  CSTRN DB '1q2w3e4r5tzxcvbnmkjh09876gtyhk$'
+  beforeModifiedMsg DB 'Before modified, CSTRN:$'
+  afterModifiedMsg DB 'After modified,  CSTRN:$'
+DATASG ENDS
+
+;-----------------------------------------------------;
+;代码段
+;-----------------------------------------------------;
+CODESG SEGMENT
+  ASSUME CS: CODESG, SS: STACKSG, DS: DATASG
+MAIN PROC
+  MOV AX, DATASG
+  MOV DS, AX
+
+  PRINTSTR beforeModifiedMsg      ;输出修改之前的字符串提示符
+  PRINTLNSTR CSTRN                ;输出修改之前的字符串
+  PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
+
+
+  RETURN                          ;返回程序
+MAIN ENDP
+CODESG ENDS
+END MAIN
