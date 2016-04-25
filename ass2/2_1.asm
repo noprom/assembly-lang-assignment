@@ -48,6 +48,25 @@ HUANH MACRO
   MOV DL, 0AH
   INT 21H
 ENDM
+
+;-----------------------------------------------------;
+;输出空格
+;-----------------------------------------------------;
+PRINTSPACE MACRO
+	LOCAL next, done
+
+  MOV BX, AX
+  MOV AH, 9
+  LEA DX, BACK
+next:
+  CMP BX, 0
+  JZ done
+  INT 21H
+  DEC BX
+  JMP next
+done:
+  NOP
+ENDM
 ;-------------------------堆栈段-----------------------;
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
@@ -176,7 +195,7 @@ Calculate: DEC b    ; b每次减1相乘
   CALL ShowNum
   MOV AX,6          ; 预设，总共显示的空格数为6个单位
   SUB AX,d          ; 还需显示多少空格
-  CALL Showspace
+	PRINTSPACE
   POP AX
   CALL Calculate    ; 继续执行
 ok1:
@@ -200,20 +219,6 @@ ShowNum:
   INT 21H
 ok2:
   RET
-;-----------------------------------------------------;
-;输出空格模块
-;-----------------------------------------------------;
-Showspace:
-  MOV BX, AX
-  MOV AH, 9
-  MOV DX, OFFSET BACK
-next:
-  CMP BX, 0
-  JZ done
-  INT 21H
-  DEC BX
-  JMP next
-done:
-  RET
+
 CODE ENDS
 END START
