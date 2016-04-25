@@ -67,6 +67,7 @@ next:
 done:
   NOP
 ENDM
+
 ;-------------------------堆栈段-----------------------;
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
@@ -192,7 +193,7 @@ Calculate: DEC b    ; b每次减1相乘
 
   PUSH AX           ; 保存所得数据
   MOV d,0           ; 此处d为位数，为了显示后面的空格
-  CALL ShowNum
+  CALL PRINTNUM
   MOV AX,6          ; 预设，总共显示的空格数为6个单位
   SUB AX,d          ; 还需显示多少空格
 	PRINTSPACE
@@ -203,7 +204,7 @@ ok1:
 ;-----------------------------------------------------;
 ;显示模块
 ;-----------------------------------------------------;
-ShowNum:
+PRINTNUM:
   MOV BX, 10       ; BX中存除数10
   CMP AX, 0
   JZ ok2           ; 除法运算是否完毕
@@ -211,7 +212,7 @@ ShowNum:
   DIV BL           ; 除以10，整数商存在AL，余数存在AH
   PUSH AX
   AND AX, 00FFH    ; 屏蔽高八位，取商
-  CALL SHOWNum
+  CALL PRINTNUM
   POP DX
   MOV DL, DH       ; 取出高八位，即为要显示的余数
   OR DL, 30H       ; 转为ASCII码
