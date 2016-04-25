@@ -143,7 +143,7 @@ MZTJ: HUANH
   MOV CX, BP            ; 此时CX=阶数
   MOV a, BP             ; a=阶数
   DEC a
-  CALL yhsj             ; 调用yhsj子程序
+  CALL CALCYHSJ         ; 调用CALCYHSJ子程序
 
 exit:
   HUANH
@@ -151,7 +151,7 @@ exit:
 ;-----------------------------------------------------;
 ;输出杨辉三角
 ;-----------------------------------------------------;
-yhsj:
+CALCYHSJ:
   MOV c, 1
   HUANH
   DEC BP
@@ -160,12 +160,12 @@ yhsj:
   PRINT BETWEEN
   MOV AX,1
   PUSH b
-  CALL Calculate
+  CALL CALCNUM
   POP b
   INC b
   DEC CX
   CMP CX,1
-  JA yhsj
+  JA CALCYHSJ
 ;-----------------------------------------------------;
 ;输入询问模块
 ;-----------------------------------------------------;
@@ -184,7 +184,7 @@ exit1:              ; 不继续输入则退出程序
 ;-----------------------------------------------------;
 ;核心计算模块
 ;-----------------------------------------------------;
-Calculate: DEC b    ; b每次减1相乘
+CALCNUM: DEC b    ; b每次减1相乘
   MUL b
   DIV c             ; 除以c，再加1
   INC c
@@ -198,7 +198,7 @@ Calculate: DEC b    ; b每次减1相乘
   SUB AX,d          ; 还需显示多少空格
 	PRINTSPACE
   POP AX
-  CALL Calculate    ; 继续执行
+  CALL CALCNUM    ; 继续执行
 ok1:
   RET
 ;-----------------------------------------------------;
