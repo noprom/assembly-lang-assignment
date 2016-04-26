@@ -45,6 +45,30 @@ RETURN MACRO
 ENDM
 
 ;-----------------------------------------------------;
+;删除数字
+;-----------------------------------------------------;
+DELETE_NUM MACRO STR
+  LOCAL s, gt0;, le9
+  MOV CX, strSize - 1
+s:
+  MOV SI, WORD PTR strIndex
+  MOV BL, STR[SI]
+  ;TODO 判断是否是数字，delete
+
+  CMP BL, 30H
+  JGE gt0
+  PRINTSTR '<0'
+gt0:
+  CMP BL, 39H
+  JLE le9
+  PRINTSTR '>9'
+;le9:
+;  PRINTSTR '[0, 9]'
+
+  INC strIndex
+  LOOP s
+ENDM
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -56,6 +80,8 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   CSTRN DB '1q2w3e4r5tzxcvbnmkjh09876gtyhk$'
+  strSize EQU $-CSTRN    ;字符串的大小
+  strIndex DB 0          ;遍历字符串的索引
   beforeModifiedMsg DB 'Before modified, CSTRN:$'
   afterModifiedMsg DB 'After modified,  CSTRN:$'
 DATASG ENDS
@@ -71,9 +97,8 @@ MAIN PROC
 
   PRINTSTR beforeModifiedMsg      ;输出修改之前的字符串提示符
   PRINTLNSTR CSTRN                ;输出修改之前的字符串
-  PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
-
-
+  PRINTLNSTR afterModifiedMsg     ;输出修改之后的字符串提示符
+  DELETE_NUM CSTRN                ;首先将数字删除
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
