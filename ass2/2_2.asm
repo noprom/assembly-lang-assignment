@@ -92,22 +92,75 @@ ge0:
   JLE le9
   JMP next
 le9:
-  MOV BYTE PTR STR[SI], 20H										;将数字替换成空格
+  MOV BYTE PTR STR[SI], 20H								;将数字替换成空格
 next:
   INC SI
   LOOP s
 
-	POP AX																   ;寄存器出栈
+	POP AX																  ;寄存器出栈
 	POP BX
 	POP CX
 ENDM
 
 ;-----------------------------------------------------;
-;对字符串进行排序
+;对字符串进行从小到大的冒泡排序
 ;-----------------------------------------------------;
-SORT_STR MACRO STR
+SORT_STR MACRO STR, strSize
+	LOCAL loopA1, loopA2
+	PUSH AX
+	PUSH BX
+	PUSH CX
+	PUSH DX														;寄存器入栈
 
+	MOV DI, strSize - 1								;外层循环次数
+loopA1:
+	MOV CX, DI												;内层循环次数
+	MOV BX, 0
+loopA2:
+	MOV AL, STR[BX]
+	CMP AL, STR[BX + 1]
+	JLE CONT													;小于等于则不做变化
+
+	XCHG AL, STR[BX + 1]							;否则对两数进行交换
+	XCHG STR[BX], AL
+CONT:
+	INC BX
+	LOOP loopA2
+	DEC DI
+	JNZ loopA1												;不为0则继续外层循环
+
+	PUSH DX
+	PUSH CX
+	PUSH BX
+	PUSH AX														;寄存器出栈
 ENDM
+
+;-----------------------------------------------------;
+;输出排序之后的字符串
+;-----------------------------------------------------;
+PRINT_STR MACRO STR
+  LOCAL s, next
+
+	PUSH CX
+	PUSH BX
+	PUSH AX																		;寄存器入栈
+
+  MOV CX, strSize
+	MOV SI, 0
+s:
+  MOV BL, BYTE PTR STR[SI]
+  CMP BL, 20H
+  JE next
+  PRINTCHAR BL
+next:
+	INC SI
+  LOOP s
+
+	POP AX																  ;寄存器出栈
+	POP BX
+	POP CX
+ENDM
+
 ;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
@@ -139,8 +192,8 @@ MAIN PROC
   PRINTLNSTR CSTRN                ;输出修改之前的字符串
   PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
   DELETE_NUM CSTRN                ;首先将数字删除
-	PRINTSTR CSTRN								  ;输出删除数字之后的字符串
-	SORT_STR CSTN 									;对删除数字之后的字符串进行排序
+	SORT_STR CSTRN, strSize 				;对删除数字之后的字符串进行排序
+	PRINT_STR CSTRN								  ;输出删除数字之后的字符串
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
