@@ -118,10 +118,6 @@ DATASG SEGMENT
   strIndex DB 0          ;遍历字符串的索引
   beforeModifiedMsg DB 'Before modified, CSTRN:$'
   afterModifiedMsg DB 'After modified,  CSTRN:$'
-	lt1 DB '<1$'
-	gt9 DB '>9$'
-	numberOK DB '[0, 9]$'
-	COMMA DB ','
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -138,6 +134,7 @@ MAIN PROC
   PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
   DELETE_NUM CSTRN                ;首先将数字删除
 	PRINTSTR CSTRN								  ;输出删除数字之后的字符串
+	;SORT_STR CSTN 									;对删除数字之后的字符串进行排序
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
