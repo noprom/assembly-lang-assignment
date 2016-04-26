@@ -80,7 +80,6 @@ DELETE_NUM MACRO STR
 	PUSH AX																		;寄存器入栈
 
   MOV CX, strSize
-	DEC CX
 	MOV SI, 0
 s:
   MOV BL, BYTE PTR STR[SI]
@@ -102,6 +101,13 @@ next:
 	POP BX
 	POP CX
 ENDM
+
+;-----------------------------------------------------;
+;对字符串进行排序
+;-----------------------------------------------------;
+SORT_STR MACRO STR
+
+ENDM
 ;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
@@ -114,7 +120,7 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   CSTRN DB '1q2w3e4r5tzxcvbnmkjh09876gtyhk$'
-  strSize EQU $-CSTRN    ;字符串的大小
+  strSize EQU $-CSTRN-1  ;字符串的大小
   strIndex DB 0          ;遍历字符串的索引
   beforeModifiedMsg DB 'Before modified, CSTRN:$'
   afterModifiedMsg DB 'After modified,  CSTRN:$'
@@ -134,7 +140,7 @@ MAIN PROC
   PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
   DELETE_NUM CSTRN                ;首先将数字删除
 	PRINTSTR CSTRN								  ;输出删除数字之后的字符串
-	;SORT_STR CSTN 									;对删除数字之后的字符串进行排序
+	SORT_STR CSTN 									;对删除数字之后的字符串进行排序
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
