@@ -10,7 +10,7 @@ LF EQU 0AH                            ;换行符的ASCII值
 ;-----------------------------------------------------;
 ;输出一个字符串的内容
 ;-----------------------------------------------------;
-PRINTSTR	MACRO	ASC
+PRINTSTR MACRO ASC
 	PUSH AX
 	PUSH DX
 
@@ -81,10 +81,9 @@ DELETE_NUM MACRO STR
 
   MOV CX, strSize
 	DEC CX
+	MOV SI, 0
 s:
-  MOV SI, WORD PTR strIndex
   MOV BL, BYTE PTR STR[SI]
-
   ;判断是否是数字，然后删除
   CMP BL, 30H
   JGE ge0
@@ -94,16 +93,14 @@ ge0:
   JLE le9
   JMP next
 le9:
-  MOV STR[SI], 20H										;将数字替换成空格
+  MOV BYTE PTR STR[SI], 20H										;将数字替换成空格
 next:
-  INC strIndex
-
+  INC SI
   LOOP s
 
 	POP AX																   ;寄存器出栈
 	POP BX
 	POP CX
-	PRINTLNSTR STR								;输出删除数字之后的字符串
 ENDM
 ;-----------------------------------------------------;
 ;堆栈段
@@ -124,7 +121,7 @@ DATASG SEGMENT
 	lt1 DB '<1$'
 	gt9 DB '>9$'
 	numberOK DB '[0, 9]$'
-
+	COMMA DB ','
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -138,9 +135,9 @@ MAIN PROC
 
   PRINTSTR beforeModifiedMsg      ;输出修改之前的字符串提示符
   PRINTLNSTR CSTRN                ;输出修改之前的字符串
-  PRINTLNSTR afterModifiedMsg     ;输出修改之后的字符串提示符
+  PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
   DELETE_NUM CSTRN                ;首先将数字删除
-	;PRINTLNSTR CSTRN								;输出删除数字之后的字符串
+	PRINTSTR CSTRN								  ;输出删除数字之后的字符串
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
