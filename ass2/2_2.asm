@@ -1,8 +1,8 @@
 ;; Author: noprom <tyee.noprom@qq.com>
 ;; Data: 2016/4/20 2:26PM
 ;; Title: 实验二(2):
-;; 对CSTRN地址起的30个字节长的字符串，删除其中的数字符，后续字符向前递补。用带有交换标志的冒泡
-;; 排序将字符串中的剩余字符按照升序排。输出修改之前和修改之后的CSTRN字符串。
+;; 对CSTRN地址起的30个字节长的字符串，删除其中的数字符，后续字符向前递补。
+;; 用带有交换标志的冒泡排序将字符串中的剩余字符按照升序排。输出修改之前和修改之后的CSTRN字符串。
 ;------------------------定义符号----------------------;
 CR EQU 0DH                            ;回车符的ASCII值
 LF EQU 0AH                            ;换行符的ASCII值
@@ -48,25 +48,36 @@ ENDM
 ;删除数字
 ;-----------------------------------------------------;
 DELETE_NUM MACRO STR
-  LOCAL s, gt0;, le9
-  MOV CX, strSize - 1
+  LOCAL s, ge0, le9, next
+	PUSH CX
+	PUSH BX
+	PUSH AX																		;寄存器入栈
+
+  MOV CX, strSize
+	DEC CX
 s:
   MOV SI, WORD PTR strIndex
-  MOV BL, STR[SI]
-  ;TODO 判断是否是数字，delete
+  MOV BL, BYTE PTR STR[SI]
 
+  ;判断是否是数字，然后删除
   CMP BL, 30H
-  JGE gt0
-  PRINTSTR '<0'
-gt0:
+  JGE ge0
+  JMP next
+ge0:
   CMP BL, 39H
   JLE le9
-  PRINTSTR '>9'
-;le9:
-;  PRINTSTR '[0, 9]'
+  JMP next
+le9:
 
+  PRINTCHAR numberOK
+next:
   INC strIndex
+
   LOOP s
+
+	POP AX																   ;寄存器出栈
+	POP BX
+	POP CX
 ENDM
 ;-----------------------------------------------------;
 ;堆栈段
@@ -84,6 +95,10 @@ DATASG SEGMENT
   strIndex DB 0          ;遍历字符串的索引
   beforeModifiedMsg DB 'Before modified, CSTRN:$'
   afterModifiedMsg DB 'After modified,  CSTRN:$'
+	lt1 DB '<1$'
+	gt9 DB '>9$'
+	numberOK DB '[0, 9]$'
+
 DATASG ENDS
 
 ;-----------------------------------------------------;
