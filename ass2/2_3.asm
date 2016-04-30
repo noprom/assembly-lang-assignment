@@ -247,6 +247,38 @@ EXIT:
   RET
 INPUT_STU ENDP
 
+;-----------------------------------------------------;
+;按照成绩从高到低排序子程序,冒泡排序
+;-----------------------------------------------------;
+SORT_BY_SCORE PROC
+  PUSH AX
+  PUSH BX
+  PUSH CX
+  PUSH DI                     ;寄存器入栈
+
+  MOV DI, 10                  ;设置外层循环次数
+  DEC DI
+LOP1:
+  MOV CX, DI
+  MOV BX, 0
+LOP2:
+  MOV AX, WORD PTR TAB[BX].S_AL
+  CMP AX, WORD PTR TAB[BX+30].S_AL
+  JGE CNT1
+  ;SWAP                       ;如果小于则交换
+CNT1:
+  ADD BX, 30
+  LOOP LOP2
+  DEC DI
+  JNE LOP1
+
+  POP DI
+  POP CX
+  POP BX
+  POP AX                     ;寄存器出栈
+  RET
+SORT_BY_SCORE ENDP
+
 
 CODESG ENDS
 END MAIN
