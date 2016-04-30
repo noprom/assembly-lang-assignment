@@ -154,6 +154,29 @@ MOVE:
 ENDM
 
 ;-----------------------------------------------------;
+;交换相邻学生结构体中的数据,起始地址位于BX中
+;-----------------------------------------------------;
+SWAP_STU MACRO
+  LOCAL LOP
+  PUSH AX
+  PUSH CX
+  PUSH SI               ;寄存器入栈
+
+  MOV SI, 0
+  MOV CX, 30
+LOP:
+  MOV AL, BYTE PTR TAB[BX][SI]
+  MOV AH, BYTE PTR TAB[BX+30][SI]
+  MOV BYTE PTR TAB[BX+30][SI], AL
+  MOV BYTE PTR TAB[BX][SI], AH
+  INC SI
+  LOOP LOP
+
+  POP SI
+  POP CX
+  POP AX                ;寄存器出栈
+ENDM
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -265,7 +288,7 @@ LOP2:
   MOV AX, WORD PTR TAB[BX].S_AL
   CMP AX, WORD PTR TAB[BX+30].S_AL
   JGE CNT1
-  ;SWAP                       ;如果小于则交换
+  SWAP_STU                    ;如果小于则交换
 CNT1:
   ADD BX, 30
   LOOP LOP2
