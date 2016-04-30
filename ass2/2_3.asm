@@ -81,6 +81,19 @@ STACKSG SEGMENT STACK 'S'
 STACKSG ENDS
 
 ;-----------------------------------------------------;
+;定义学生信息结构体
+;-----------------------------------------------------;
+STU STRUC
+  NAME DB 10 DUP(?)   ;姓名
+  ID   DB 10 DUP(?)   ;学号
+  S_ZC DW ?           ;组成原理成绩
+  S_DS DW ?           ;数据结构成绩
+  S_HB DW ?           ;汇编成绩
+  S_AL DW ?           ;总成绩
+  NO   DW ?           ;成绩排名
+STU ENDS
+
+;-----------------------------------------------------;
 ;数据段
 ;-----------------------------------------------------;
 DATASG SEGMENT
@@ -97,7 +110,7 @@ MAIN PROC
   MOV AX, DATASG
   MOV DS, AX
 
-  
+
   RETURN
 MAIN ENDP
 CODESG ENDS
