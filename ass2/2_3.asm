@@ -79,3 +79,26 @@ ENDM
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
 STACKSG ENDS
+
+;-----------------------------------------------------;
+;数据段
+;-----------------------------------------------------;
+DATASG SEGMENT
+
+DATASG ENDS
+
+;-----------------------------------------------------;
+;代码段
+;-----------------------------------------------------;
+CODESG SEGMENT
+  ASSUME CS: CODESG, DS: DATASG, SS: STACKSG
+
+MAIN PROC
+  MOV AX, DATASG
+  MOV DS, AX
+
+  
+  RETURN
+MAIN ENDP
+CODESG ENDS
+END MAIN
