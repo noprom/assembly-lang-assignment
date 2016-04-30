@@ -83,6 +83,43 @@ RETURN MACRO
 ENDM
 
 ;-----------------------------------------------------;
+;输入学生姓名获得学号的宏定义
+;参数: TAB中的偏移量
+;-----------------------------------------------------;
+INPUT_INFO MACRO OFFSET
+  LOCAL LOOP_INPUT
+  PUSH AX
+  PUSH BX
+  PUSH BP
+  PUSH CX
+  PUSH DX
+  PUSH SI
+
+  INPUTSTR BUF
+  MOV BL, BUF + 1       ;输入字符串真实长度
+  AND BX, 00FFH         ;BX存放字符串长度
+  MOV BYTE PTR BUF[2+BX], '$'
+  INC BX
+  MOV CX, BX            ;设置循环次数
+  MOV SI, 0             ;变址寄存器清零, 用来定位输入字符
+
+  ;为BP对应的学生的姓名|学号的对应位置赋值
+LOOP_INPUT:
+  MOV AL, BYTE PTR BUF[2+SI]
+  MOV BYTE PTR TAB[BP + OFFSET][SI], AL
+  INC SI
+  LOOP LOOP_INPUT
+
+  POP SI
+  POP DX
+  POP CX
+  POP BP
+  POP BX
+  POP AX
+  RET
+ENDM
+
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -145,8 +182,9 @@ INPUT_STU PROC
 INPUT:
   MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 
-  CALL INPUT_NAME             ;输入学生姓名
-  
+  INPUT_INFO 0                ;输入学生姓名
+  INPUT_INFO 10               ;输入学生学号
+
 
   POP CX
   POP BP
@@ -155,40 +193,7 @@ INPUT:
   RET
 INPUT_STU ENDP
 
-;-----------------------------------------------------;
-;输入学生姓名子程序
-;-----------------------------------------------------;
-INPUT_NAME PROC
-  PUSH AX
-  PUSH BX
-  PUSH BP
-  PUSH CX
-  PUSH DX
-  PUSH SI
 
-  INPUTSTR BUF
-  MOV BL, BUF + 1       ;输入字符串真实长度
-  AND BX, 00FFH         ;AX存放字符串长度
-  MOV BYTE PTR BUF[2+BX], '$'
-  INC BX
-  MOV CX, BX
-  MOV SI, 0
-
-  ;为BP对应的学生的姓名对应位置赋值
-LOOP_INPUT_NAME:
-  MOV AL, BYTE PTR BUF[2+SI]
-  MOV BYTE PTR STU[BP][SI], AL
-  INC SI
-  LOOP LOOP_INPUT_NAME
-
-  POP SI
-  POP DX
-  POP CX
-  POP BP
-  POP BX
-  POP AX
-  RET
-INPUT_NAME ENDP
 
 CODESG ENDS
 END MAIN
