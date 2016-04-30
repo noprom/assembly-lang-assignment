@@ -129,7 +129,25 @@ INPUT_SCORE MACRO SUBJ
   PUSH BX
   PUSH CX               ;寄存器入栈
 
+  MOV BX, 0
+INPUT:
+  MOV AH, 1
+  INT 21H
+  SUB AL, 30H           ;ASCII转化为二进制数
+  JL MOVE
+  SUB AL, 39H
+  JG MOVE               ;输入不是数字则停止输入
+  CBW                   ;否则对AL进行位扩展
+  XCHG AX, BX
+  MOV CX, 10
+  MUL CX
+  XCHG AX, BX           ;将BX原来的数字乘10
+  ADD BX, AX
+  JMP INPUT             ;继续输入下一个数字
 
+MOVE:
+  MOV WORD PTR TAB[BP].&SUBJ, BX  ;保存分数
+  
   POP CX
   POP BX
   POP AX                ;寄存器出栈
