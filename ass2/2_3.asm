@@ -147,7 +147,7 @@ INPUT:
 
 MOVE:
   MOV WORD PTR TAB[BP].&SUBJ, BX  ;保存分数
-  
+
   POP CX
   POP BX
   POP AX                ;寄存器出栈
@@ -218,7 +218,9 @@ INPUT:
 
   INPUT_INFO 0                ;输入学生姓名
   INPUT_INFO 10               ;输入学生学号
-
+  INPUT_SCORE S_ZC            ;输入组成原理成绩
+  INPUT_SCORE S_DS            ;输入数据结构成绩
+  INPUT_SCORE S_AL            ;输入汇编语言成绩
 
   POP CX
   POP BP
