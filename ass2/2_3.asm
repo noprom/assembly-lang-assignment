@@ -93,7 +93,7 @@ INPUT_INFO MACRO OFFSET
   PUSH BP
   PUSH CX
   PUSH DX
-  PUSH SI
+  PUSH SI               ;寄存器入栈
 
   INPUTSTR BUF
   HUANHANG
@@ -116,7 +116,23 @@ LOOP_INPUT:
   POP CX
   POP BP
   POP BX
-  POP AX
+  POP AX                ;寄存器出栈
+ENDM
+
+;-----------------------------------------------------;
+;输入学生姓名的分数
+;参数: 数据段中各科的名称
+;-----------------------------------------------------;
+INPUT_SCORE MACRO SUBJ
+  LOCAL INPUT, MOVE
+  PUSH AX
+  PUSH BX
+  PUSH CX               ;寄存器入栈
+
+
+  POP CX
+  POP BX
+  POP AX                ;寄存器出栈
 ENDM
 
 ;-----------------------------------------------------;
