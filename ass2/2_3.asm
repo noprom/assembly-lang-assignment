@@ -11,6 +11,15 @@ CR EQU 0DH                            ;回车符的ASCII值
 LF EQU 0AH                            ;换行符的ASCII值
 
 ;-----------------------------------------------------;
+;输入字符串
+;-----------------------------------------------------;
+INPUTSTR	MACRO	STR
+  MOV AH, 0AH     ;接受一串字符串
+  LEA DX, STR
+  INT 21H
+ENDM
+
+;-----------------------------------------------------;
 ;输出一个字符串的内容
 ;-----------------------------------------------------;
 PRINTSTR MACRO ASC
@@ -122,6 +131,7 @@ MAIN PROC
 
   RETURN
 MAIN ENDP
+
 ;-----------------------------------------------------;
 ;输入学生数据子程序
 ;-----------------------------------------------------;
@@ -130,11 +140,49 @@ INPUT_STU PROC
   PUSH BX
   PUSH BP
   PUSH CX                     ;寄存器入栈
+INPUT:
+  MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 
   POP CX
   POP BP
   POP BX
   POP AX                      ;寄存器出栈
+  RET
 INPUT_STU ENDP
+
+;-----------------------------------------------------;
+;输入学生姓名子程序
+;-----------------------------------------------------;
+INPUT_NAME PROC
+  PUSH AX
+  PUSH BX
+  PUSH BP
+  PUSH CX
+  PUSH DX
+  PUSH SI
+
+  INPUTSTR BUF
+  MOV BL, BUF + 1       ;输入字符串真实长度
+  AND BX, 00FFH         ;AX存放字符串长度
+  MOV BYTE PTR BUF[2+BX], '$'
+  INC BX
+  MOV CX, BX
+  MOV SI 0
+
+  ;为BP对应的学生的姓名对应位置赋值
+S:MOV AL, BYTE PTR BUF[2+SI]
+  MOV BYTE PTR STU[BP][SI], AL
+  INC SI
+  LOOP S
+
+  POP SI
+  POP DX
+  POP CX
+  POP BP
+  POP BX
+  POP AX
+  RET
+INPUT_NAME ENDP
+
 CODESG ENDS
 END MAIN
