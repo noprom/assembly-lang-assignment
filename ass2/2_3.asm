@@ -97,8 +97,8 @@ STU ENDS
 ;数据段
 ;-----------------------------------------------------;
 DATASG SEGMENT
-
-  TAB STU 10 DUP(<>)      ;存放10个学生的成绩
+  TAB STU 10 DUP(<>)          ;存放10个学生的成绩
+  BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
 DATASG ENDS
@@ -109,14 +109,32 @@ DATASG ENDS
 CODESG SEGMENT
   ASSUME CS: CODESG, DS: DATASG, SS: STACKSG
 
+;-----------------------------------------------------;
+;主程序
+;-----------------------------------------------------;
 MAIN PROC
   MOV AX, DATASG
   MOV DS, AX
-
+  ;输出请输入的提示信息
   PRINTLNSTR MSG_INPUT1
   PRINTLNSTR MSG_INPUT2
 
+
   RETURN
 MAIN ENDP
+;-----------------------------------------------------;
+;输入学生数据子程序
+;-----------------------------------------------------;
+INPUT_STU PROC
+  PUSH AX
+  PUSH BX
+  PUSH BP
+  PUSH CX                     ;寄存器入栈
+
+  POP CX
+  POP BP
+  POP BX
+  POP AX                      ;寄存器出栈
+INPUT_STU ENDP
 CODESG ENDS
 END MAIN
