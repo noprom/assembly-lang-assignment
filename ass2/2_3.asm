@@ -306,8 +306,37 @@ SORT_BY_SCORE ENDP
 ;按照学号从低到高排序子程序,冒泡排序
 ;-----------------------------------------------------;
 SORT_BY_ID PROC
-  MOV SI, 10
+  PUSH AX
+  PUSH BX
+  PUSH CX
+  PUSH SI
+  PUSH DI                   ;寄存器入栈
 
+  MOV DI, 10
+  DEC DI
+LOP_NO1:
+  MOV CX, DI
+  MOV BX, 0
+LOP_NO2:
+  MOV SI, -1
+LOP_NO3:
+  INC SI
+  MOV AL, BYTE PTR TAB[BX].ID[SI]
+  MOV AH, BYTE PTR TAB[BX+30].ID[SI]
+  JE LOP_NO3
+  JL CNT_ID
+  SWAP_STU
+CNT_ID:
+  ADD BX, 30
+  LOOP LOP_NO2
+  DEC DI
+  JNZ LOP_NO1
+
+  POP DI
+  POP SI
+  POP CX
+  POP BX
+  POP AX                    ;寄存器出栈
   RET
 SORT_BY_ID ENDP
 CODESG ENDS
