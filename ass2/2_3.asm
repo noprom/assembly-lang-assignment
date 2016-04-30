@@ -96,6 +96,7 @@ INPUT_INFO MACRO OFFSET
   PUSH SI
 
   INPUTSTR BUF
+  HUANHANG
   MOV BL, BUF + 1       ;输入字符串真实长度
   AND BX, 00FFH         ;BX存放字符串长度
   MOV BYTE PTR BUF[2+BX], '$'
@@ -116,7 +117,6 @@ LOOP_INPUT:
   POP BP
   POP BX
   POP AX
-  RET
 ENDM
 
 ;-----------------------------------------------------;
