@@ -84,7 +84,7 @@ STACKSG ENDS
 ;定义学生信息结构体
 ;-----------------------------------------------------;
 STU STRUC
-  NAME DB 10 DUP(?)   ;姓名
+  NAM  DB 10 DUP(?)   ;姓名
   ID   DB 10 DUP(?)   ;学号
   S_ZC DW ?           ;组成原理成绩
   S_DS DW ?           ;数据结构成绩
@@ -98,6 +98,9 @@ STU ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
 
+  TAB STU 10 DUP(<>)      ;存放10个学生的成绩
+  MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
+  MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -110,6 +113,8 @@ MAIN PROC
   MOV AX, DATASG
   MOV DS, AX
 
+  PRINTLNSTR MSG_INPUT1
+  PRINTLNSTR MSG_INPUT2
 
   RETURN
 MAIN ENDP
