@@ -277,12 +277,12 @@ SORT_BY_SCORE PROC
   PUSH AX
   PUSH BX
   PUSH CX
-  PUSH DI                     ;寄存器入栈
+  PUSH SI                     ;寄存器入栈
 
-  MOV DI, 10                  ;设置外层循环次数
-  DEC DI
+  MOV SI, 10                  ;设置外层循环次数
+  DEC SI
 LOP_SCORE1:
-  MOV CX, DI
+  MOV CX, SI
   MOV BX, 0
 LOP_SCORE2:
   MOV AX, WORD PTR TAB[BX].S_AL
@@ -292,16 +292,23 @@ LOP_SCORE2:
 CNT_SCORE:
   ADD BX, 30
   LOOP LOP_SCORE2
-  DEC DI
+  DEC SI
   JNE LOP_SCORE1
 
-  POP DI
+  POP SI
   POP CX
   POP BX
   POP AX                     ;寄存器出栈
   RET
 SORT_BY_SCORE ENDP
 
+;-----------------------------------------------------;
+;按照学号从低到高排序子程序,冒泡排序
+;-----------------------------------------------------;
+SORT_BY_ID PROC
+  MOV SI, 10
 
+  RET
+SORT_BY_ID ENDP
 CODESG ENDS
 END MAIN
