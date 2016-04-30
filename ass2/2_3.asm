@@ -181,6 +181,8 @@ DATASG SEGMENT
   BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
+  MSG_INPUT3 DB 'Please input a student'' name, id and score, every line has only one field:$'
+  MSG_INPUT4 DB 'The student'' info has been recorded.$'
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -213,22 +215,37 @@ INPUT_STU PROC
   PUSH BX
   PUSH BP
   PUSH CX                     ;寄存器入栈
-INPUT:
-  MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 
+  MOV CX, 0                  ;循环10次
+  MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
+INPUT:
+  PRINTLNSTR MSG_INPUT3
   INPUT_INFO 0                ;输入学生姓名
   INPUT_INFO 10               ;输入学生学号
   INPUT_SCORE S_ZC            ;输入组成原理成绩
   INPUT_SCORE S_DS            ;输入数据结构成绩
-  INPUT_SCORE S_AL            ;输入汇编语言成绩
-
+  INPUT_SCORE S_HB            ;输入汇编语言成绩
+  ;将输入的成绩累加并且存放到S_AL字段中
+  MOV AX, WORD PTR TAB[BP].S_ZC
+  ADD AX, WORD PTR TAB[BP].S_DS
+  ADD AX, WORD PTR TAB[BP].S_HB
+  MOV WORD PTR TAB[BP].S_AL, AX
+  PRINTLNSTR MSG_INPUT4
+  ADD BP, 30                  ;寻址下一个学生的地址
+  ;累加寄存器输入的次数
+  INC CX
+  CMP CX, 10
+  JL LOP
+  JMP EXIT
+LOP:
+  JMP INPUT
+EXIT:
   POP CX
   POP BP
   POP BX
   POP AX                      ;寄存器出栈
   RET
 INPUT_STU ENDP
-
 
 
 CODESG ENDS
