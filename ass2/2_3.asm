@@ -128,6 +128,8 @@ MAIN PROC
   PRINTLNSTR MSG_INPUT1
   PRINTLNSTR MSG_INPUT2
 
+  ;输入数据
+  CALL INPUT_STU
 
   RETURN
 MAIN ENDP
@@ -142,6 +144,9 @@ INPUT_STU PROC
   PUSH CX                     ;寄存器入栈
 INPUT:
   MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
+
+  CALL INPUT_NAME             ;输入学生姓名
+  
 
   POP CX
   POP BP
@@ -167,13 +172,14 @@ INPUT_NAME PROC
   MOV BYTE PTR BUF[2+BX], '$'
   INC BX
   MOV CX, BX
-  MOV SI 0
+  MOV SI, 0
 
   ;为BP对应的学生的姓名对应位置赋值
-S:MOV AL, BYTE PTR BUF[2+SI]
+LOOP_INPUT_NAME:
+  MOV AL, BYTE PTR BUF[2+SI]
   MOV BYTE PTR STU[BP][SI], AL
   INC SI
-  LOOP S
+  LOOP LOOP_INPUT_NAME
 
   POP SI
   POP DX
