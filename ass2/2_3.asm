@@ -181,7 +181,39 @@ ENDM
 ;打印学生的信息,参数:前多少个学生
 ;-----------------------------------------------------;
 PRINT_STU MACRO NUM
-  
+  LOCAL LOP
+  PUSH AX
+  PUSH BX
+  PUSH BP
+  PUSH CX                           ;寄存器入栈
+
+  MOV BP, 0
+  MOV CX, NUM
+LOP:
+  PRINTSTR TAB[BP].NAM              ;输出姓名
+  PRINTCHAR ','
+  PRINTSTR TAB[BP].ID               ;输出学号
+  PRINTCHAR ','
+  MOV BX, WORD PTR TAB[BP].S_ZC     ;组成原理成绩
+  CALL TERN
+  PRINTCHAR ','
+  MOV BX, WORD PTR TAB[BP].S_DS     ;数据结构成绩
+  CALL TERN
+  PRINTCHAR ','
+  MOV BX, WORD PTR TAB[BP].S_HB     ;汇编语言成绩
+  CALL TERN
+  PRINTCHAR ','
+  MOV BX, WORD PTR TAB[BP].S_AL     ;总成绩
+  CALL TERN
+  HUANHANG
+  ;下一个学生的成绩
+  ADD BP, 30
+  LOOP LOP
+
+  POP CX
+  POP BP
+  POP BX
+  POP AX                ;寄存器出栈
 ENDM
 
 ;-----------------------------------------------------;
@@ -210,6 +242,7 @@ STU ENDS
 DATASG SEGMENT
   TAB STU 10 DUP(<>)          ;存放10个学生的成绩
   BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
+  FLAG DB  0                  ;二进制转十进制用
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
   MSG_INPUT3 DB 'Please input a student'' name, id and score, every line has only one field:$'
