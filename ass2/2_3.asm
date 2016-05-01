@@ -247,6 +247,13 @@ DATASG SEGMENT
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
   MSG_INPUT3 DB 'Please input a student'' name, id and score, every line has only one field:$'
   MSG_INPUT4 DB 'The student'' info has been recorded.$'
+  MSG_TAB    DB '----- 1: Show top 3       -----', CR, LF
+             DB '----- 2: Show NO.1 - NO.5 -----', CR, LF
+             DB '----- 3: Quit             -----', CR, LF, '$'    ;菜单提示信息
+  JMP_TAB    DW SHOW_TOP_3	  ;地址表（跳转表）
+          	 DW SHOW_NO1_5
+          	 DW QUIT
+             
 DATASG ENDS
 
 ;-----------------------------------------------------;
