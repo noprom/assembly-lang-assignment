@@ -220,10 +220,21 @@ PRINT_STU_ITEM MACRO
   PUSH BP
   PUSH DX
 
-  PRINTSTR TAB[BP].NAM              ;输出姓名
+  MOV   AH,9
+  LEA   DX,TAB[BP].NAM
+  INT   21H
+  ;PRINTSTR TAB[BP].NAM              ;输出姓名
+  MOV   AH,2
+  MOV   DL,','
+  INT   21H
+  MOV   AH,9
+  LEA   DX,TAB[BP].ID
+  INT   21H
+  ;PRINTSTR TAB[BP].ID               ;输出学号
   ;PRINTCHAR ','
-  PRINTSTR TAB[BP].ID               ;输出学号
-  ;PRINTCHAR ','
+  MOV   AH,2
+  MOV   DL,','
+  INT   21H
   MOV BX, WORD PTR TAB[BP].S_ZC     ;组成原理成绩
   CALL TERN
   PRINTCHAR ','
@@ -276,6 +287,9 @@ DATASG SEGMENT
   MSG_INPUT4 DB 'The student'' info has been recorded.$'
   MSG_SELECT DB 'Please select a number:$'
   MSG_S_ERR  DB 'Choice must between 1 and 3$'
+  MSG_TOP3   DB 'Top 3 student:$'
+  MSG_N1_5   DB 'ID 1-5 student:$'
+  MSG_SCORE  DB 'Name, ID, Compent score, Structure Score, Assembly Score$'
   MSG_TAB    DB '----- 1: Show top 3       -----', CR, LF
              DB '----- 2: Show NO.1 - NO.5 -----', CR, LF
              DB '----- 3: Quit             -----', CR, LF, '$'    ;菜单提示信息
@@ -300,9 +314,6 @@ MAIN PROC
   PRINTLNSTR MSG_INPUT1       ;输出请输入的提示信息
   PRINTLNSTR MSG_INPUT2
   CALL INPUT_STU              ;输入数据
-  ;MOV AX, STU_NUM
-  ;CALL PRINT_STU
-  ;JMP QUIT
 
 REPEAT:
   PRINTLNSTR MSG_TAB          ;跳转表法来选择所要执行的操作
@@ -330,6 +341,8 @@ BEEP:
 
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
   CALL SORT_BY_SCORE
+  PRINTLNSTR MSG_TOP3
+  PRINTLNSTR MSG_SCORE
   MOV AX, 3
   CALL PRINT_STU
 
@@ -339,7 +352,9 @@ SHOW_TOP_3:                   ;显示排名前三的同学的成绩
 
 SHOW_NO1_5:                   ;显示学号前5的同学的成绩
   CALL SORT_BY_ID
-  MOV AX, 5
+  PRINTLNSTR MSG_N1_5
+  PRINTLNSTR MSG_SCORE
+  MOV AX, 3
   CALL PRINT_STU
 
   MOV AH, 0
@@ -441,7 +456,7 @@ LOP_NO2:
 LOP_NO3:
   INC SI
   MOV AL, BYTE PTR TAB[BX].ID[SI]
-  MOV AH, BYTE PTR TAB[BX+30].ID[SI]
+  CMP AL, BYTE PTR TAB[BX+30].ID[SI]
   JE LOP_NO3
   JL CNT_ID
   SWAP_STU
