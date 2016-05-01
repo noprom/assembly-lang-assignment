@@ -86,7 +86,7 @@ ENDM
 ;输入学生姓名获得学号的宏定义
 ;参数: TAB中的偏移量
 ;-----------------------------------------------------;
-INPUT_INFO MACRO OFFSET
+INPUT_INFO MACRO FIELD
   LOCAL LOOP_INPUT
   PUSH AX
   PUSH BX
@@ -107,7 +107,7 @@ INPUT_INFO MACRO OFFSET
   ;为BP对应的学生的姓名|学号的对应位置赋值
 LOOP_INPUT:
   MOV AL, BYTE PTR BUF[2+SI]
-  MOV BYTE PTR TAB[BP + OFFSET][SI], AL
+  MOV BYTE PTR TAB[BP].&FIELD[SI], AL
   INC SI
   LOOP LOOP_INPUT
 
@@ -340,8 +340,8 @@ INPUT_STU PROC
   MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 INPUT:
   PRINTLNSTR MSG_INPUT3
-  INPUT_INFO 0                ;输入学生姓名
-  INPUT_INFO 10               ;输入学生学号
+  INPUT_INFO NAM              ;输入学生姓名
+  INPUT_INFO ID               ;输入学生学号
   INPUT_SCORE S_ZC            ;输入组成原理成绩
   INPUT_SCORE S_DS            ;输入数据结构成绩
   INPUT_SCORE S_HB            ;输入汇编语言成绩
