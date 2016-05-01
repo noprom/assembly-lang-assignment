@@ -242,7 +242,7 @@ STU ENDS
 DATASG SEGMENT
   TAB STU 10 DUP(<>)          ;存放10个学生的成绩
   BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
-  STU_NUM DW 3               ;学生的个数
+  STU_NUM DW 10               ;学生的个数
   FLAG DB  0                  ;二进制转十进制用
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
@@ -253,8 +253,8 @@ DATASG SEGMENT
   MSG_TOP3   DB 'Top 3 student:$'
   MSG_N1_5   DB 'ID 1-5 student:$'
   MSG_SCORE  DB 'Name, ID, Compent score, Structure Score, Assembly Score$'
-  MSG_TAB    DB '----- 1: Show top 3       -----', CR, LF
-             DB '----- 2: Show NO.1 - NO.5 -----', CR, LF
+  MSG_TAB    DB '----- 1: Show Top 3       -----', CR, LF
+             DB '----- 2: Show ID.1 - ID.5 -----', CR, LF
              DB '----- 3: Quit             -----', CR, LF, '$'    ;菜单提示信息
   JMP_TAB    DW SHOW_TOP_3	  ;地址表（跳转表）
           	 DW SHOW_NO1_5
@@ -300,7 +300,7 @@ READ_SELECT:
 
 BEEP:
 	PRINTLNSTR MSG_S_ERR        ;输出错误信息
-  JMP REPEAT            ;转重新选择
+  JMP REPEAT                  ;转重新选择
 
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
   CALL SORT_BY_SCORE
@@ -317,7 +317,7 @@ SHOW_NO1_5:                   ;显示学号前5的同学的成绩
   CALL SORT_BY_ID
   PRINTLNSTR MSG_N1_5
   PRINTLNSTR MSG_SCORE
-  MOV AX, 3
+  MOV AX, 5
   CALL PRINT_STU
 
   MOV AH, 0
@@ -459,7 +459,7 @@ LOP_PRINT_STU:
   POP CX
   POP BP
   POP BX
-  POP AX                ;寄存器出栈
+  POP AX                            ;寄存器出栈
   RET
 PRINT_STU ENDP
 
