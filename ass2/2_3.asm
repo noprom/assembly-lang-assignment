@@ -177,23 +177,53 @@ LOP:
   POP AX                ;寄存器出栈
 ENDM
 
-;-----------------------------------------------------;
-;打印学生的信息,参数:前多少个学生
-;-----------------------------------------------------;
-PRINT_STU MACRO NUM
-  LOCAL LOP
+OUTALL    MACRO
+          PUSH  AX
+          PUSH  DX
+          PUSH  BX
+          MOV   AH,9
+          LEA   DX,TAB[BP].NAM
+          INT   21H
+          MOV   AH,2
+          MOV   DL,','
+          INT   21H
+          MOV   AH,9
+          LEA   DX,TAB[BP].ID
+          INT   21H
+          HUANHANG
+          MOV   BX,WORD PTR TAB[BP].S_ZC
+          CALL  TERN
+          MOV   AH,2
+          MOV   DL,','
+          INT   21H
+          MOV   BX,WORD PTR TAB[BP].S_DS
+          CALL  TERN
+          MOV   AH,2
+          MOV   DL,','
+          INT   21H
+          MOV   BX,WORD PTR TAB[BP].S_HB
+          CALL  TERN
+          MOV   AH,2
+          MOV   DL,','
+          INT   21H
+          MOV   BX,WORD PTR TAB[BP].S_AL
+          CALL  TERN
+          HUANHANG
+          POP   BX
+          POP   DX
+          POP   AX
+ENDM
+
+PRINT_STU_ITEM MACRO
   PUSH AX
   PUSH BX
   PUSH BP
-  PUSH CX                           ;寄存器入栈
+  PUSH DX
 
-  MOV BP, 0
-  MOV CX, NUM
-LOP:
   PRINTSTR TAB[BP].NAM              ;输出姓名
-  PRINTCHAR ','
+  ;PRINTCHAR ','
   PRINTSTR TAB[BP].ID               ;输出学号
-  PRINTCHAR ','
+  ;PRINTCHAR ','
   MOV BX, WORD PTR TAB[BP].S_ZC     ;组成原理成绩
   CALL TERN
   PRINTCHAR ','
@@ -206,16 +236,12 @@ LOP:
   MOV BX, WORD PTR TAB[BP].S_AL     ;总成绩
   CALL TERN
   HUANHANG
-  ;下一个学生的成绩
-  ADD BP, 30
-  LOOP LOP
 
-  POP CX
+  POP DX
   POP BP
   POP BX
-  POP AX                ;寄存器出栈
+  POP AX
 ENDM
-
 ;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
@@ -274,6 +300,11 @@ MAIN PROC
   PRINTLNSTR MSG_INPUT1       ;输出请输入的提示信息
   PRINTLNSTR MSG_INPUT2
   CALL INPUT_STU              ;输入数据
+  ;# TODO:
+  MOV AX, STU_NUM
+  CALL PRINT_STU
+  JMP QUIT
+
 REPEAT:
   PRINTLNSTR MSG_TAB          ;跳转表法来选择所要执行的操作
   PRINTLNSTR MSG_SELECT
@@ -301,8 +332,8 @@ BEEP:
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
   CALL  SORT_BY_SCORE
   MOV AX, 3
-  PRINTCHAR '3'
-  ;PRINT_STU AX
+  ;PRINTCHAR '3'
+  CALL PRINT_STU
 
   MOV AH, 0
   INT 16H			                ;等待键盘输入
@@ -311,8 +342,8 @@ SHOW_TOP_3:                   ;显示排名前三的同学的成绩
 SHOW_NO1_5:                   ;显示学号前5的同学的成绩
   CALL  SORT_BY_ID
   MOV AX, 5
-  ;PRINT_STU AX
-  PRINTCHAR '5'
+  ;PRINTCHAR '5'
+  CALL PRINT_STU
 
   MOV AH, 0
   INT 16H			                ;等待键盘输入
@@ -430,6 +461,33 @@ CNT_ID:
   POP AX                    ;寄存器出栈
   RET
 SORT_BY_ID ENDP
+
+
+;-----------------------------------------------------;
+;打印学生的信息,AX中存放多少个学生
+;-----------------------------------------------------;
+PRINT_STU PROC
+  PUSH AX
+  PUSH BX
+  PUSH BP
+  PUSH CX                           ;寄存器入栈
+
+  MOV BP, 0
+  MOV BX, 0
+LOP_PRINT_STU:
+  ;PRINT_STU_ITEM
+  OUTALL
+  ADD BP, 30                        ;下一个学生的成绩
+  INC BX
+  CMP BX, AX
+  JL LOP_PRINT_STU
+
+  POP CX
+  POP BP
+  POP BX
+  POP AX                ;寄存器出栈
+  RET
+PRINT_STU ENDP
 
 ;-----------------------------------------------------;
 ;二进制转化为十进制输出
