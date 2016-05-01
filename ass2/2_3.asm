@@ -242,18 +242,20 @@ STU ENDS
 DATASG SEGMENT
   TAB STU 10 DUP(<>)          ;存放10个学生的成绩
   BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
+  STU_NUM DW 5               ;学生的个数
   FLAG DB  0                  ;二进制转十进制用
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
   MSG_INPUT3 DB 'Please input a student'' name, id and score, every line has only one field:$'
   MSG_INPUT4 DB 'The student'' info has been recorded.$'
+  MSG_SELECT DB 'Please select a number:$'
   MSG_TAB    DB '----- 1: Show top 3       -----', CR, LF
              DB '----- 2: Show NO.1 - NO.5 -----', CR, LF
              DB '----- 3: Quit             -----', CR, LF, '$'    ;菜单提示信息
   JMP_TAB    DW SHOW_TOP_3	  ;地址表（跳转表）
           	 DW SHOW_NO1_5
           	 DW QUIT
-             
+
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -268,15 +270,67 @@ CODESG SEGMENT
 MAIN PROC
   MOV AX, DATASG
   MOV DS, AX
-  ;输出请输入的提示信息
-  PRINTLNSTR MSG_INPUT1
+  PRINTLNSTR MSG_INPUT1       ;输出请输入的提示信息
   PRINTLNSTR MSG_INPUT2
+  CALL INPUT_STU              ;输入数据
+REPEAT:
+  PRINTLNSTR MSG_TAB          ;跳转表法来选择所要执行的操作
+  PRINTLNSTR MSG_SELECT
+READ_SELECT:
+  MOV AH, 1                   ;等待输入选择号
+  INT 21H
 
-  ;输入数据
-  CALL INPUT_STU
-  ;跳转表法来选择所要执行的操作
+  CMP AL, 31H                 ;选择合法性检查
+  JB BEEP			                ;若非法则转移
+  CMP AL, 33H
+  JA BEEP			                ;输入的功能号应在'31' - '33'之间
 
+  AND AL, 0FH	   	            ;ASCII码转换为非压缩BCD码
+  XOR AH, AH		              ;(AX)＝功能号
+  DEC AX			                ;得到索引值
+  ADD AX, AX		              ;i项位移量＝(AX)*2
+  LEA BX, JMP_TAB		          ;装入表首址
+  ADD BX, AX		              ;得到表项地址
+  JMP [BX]			              ;按表项地址转移
 
+BEEP:
+	MOV AH, 3
+	MOV BH, 0
+	INT 10H			                ;读光标位置
+
+	CMP DL, 0
+	JZ  NOBACK		              ;如果光标位于0列,则不用再回退一格
+
+	MOV AH, 2
+	DEC DL
+	INT 10H			                ;让光标回退一格,即让下一次输入的功能号覆盖此次的错误输入
+
+NOBACK:
+	MOV AH, 14	 	              ;响铃警告
+  MOV AL, 7
+  INT 10H
+  JMP SHORT READ_SELECT       ;转重新选择
+
+SHOW_TOP_3:                   ;显示排名前三的同学的成绩
+  CALL  SORT_BY_SCORE
+  MOV AX, 3
+  PRINTCHAR '3'
+  ;PRINT_STU AX
+
+  MOV AH, 0
+  INT 16H			                ;等待键盘输入
+  JMP REPEAT		              ;返回菜单
+
+SHOW_NO1_5:                   ;显示学号前5的同学的成绩
+  CALL  SORT_BY_ID
+  MOV AX, 5
+  ;PRINT_STU AX
+  PRINTCHAR '5'
+
+  MOV AH, 0
+  INT 16H			                ;等待键盘输入
+  JMP REPEAT		              ;返回菜单
+QUIT:
   RETURN
 MAIN ENDP
 
@@ -289,7 +343,7 @@ INPUT_STU PROC
   PUSH BP
   PUSH CX                     ;寄存器入栈
 
-  MOV CX, 0                  ;循环10次
+  MOV CX, 0                   ;循环10次
   MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 INPUT:
   PRINTLNSTR MSG_INPUT3
@@ -307,7 +361,7 @@ INPUT:
   ADD BP, 30                  ;寻址下一个学生的地址
   ;累加寄存器输入的次数
   INC CX
-  CMP CX, 10
+  CMP CX, STU_NUM
   JL LOP
   JMP EXIT
 LOP:
@@ -329,7 +383,7 @@ SORT_BY_SCORE PROC
   PUSH CX
   PUSH SI                     ;寄存器入栈
 
-  MOV SI, 10                  ;设置外层循环次数
+  MOV SI, STU_NUM             ;设置外层循环次数
   DEC SI
 LOP_SCORE1:
   MOV CX, SI
@@ -362,7 +416,7 @@ SORT_BY_ID PROC
   PUSH SI
   PUSH DI                   ;寄存器入栈
 
-  MOV DI, 10
+  MOV DI, STU_NUM
   DEC DI
 LOP_NO1:
   MOV CX, DI
