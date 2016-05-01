@@ -177,74 +177,37 @@ LOP:
   POP AX                ;寄存器出栈
 ENDM
 
-OUTALL    MACRO
-          PUSH  AX
-          PUSH  DX
-          PUSH  BX
-          MOV   AH,9
-          LEA   DX,TAB[BP].NAM
-          INT   21H
-          MOV   AH,2
-          MOV   DL,','
-          INT   21H
-          MOV   AH,9
-          LEA   DX,TAB[BP].ID
-          INT   21H
-          HUANHANG
-          MOV   BX,WORD PTR TAB[BP].S_ZC
-          CALL  TERN
-          MOV   AH,2
-          MOV   DL,','
-          INT   21H
-          MOV   BX,WORD PTR TAB[BP].S_DS
-          CALL  TERN
-          MOV   AH,2
-          MOV   DL,','
-          INT   21H
-          MOV   BX,WORD PTR TAB[BP].S_HB
-          CALL  TERN
-          MOV   AH,2
-          MOV   DL,','
-          INT   21H
-          MOV   BX,WORD PTR TAB[BP].S_AL
-          CALL  TERN
-          HUANHANG
-          POP   BX
-          POP   DX
-          POP   AX
-ENDM
-
+;-----------------------------------------------------;
+;打印一个学生的成绩
+;-----------------------------------------------------;
 PRINT_STU_ITEM MACRO
   PUSH AX
   PUSH BX
   PUSH BP
   PUSH DX
 
-  MOV   AH,9
-  LEA   DX,TAB[BP].NAM
-  INT   21H
-  ;PRINTSTR TAB[BP].NAM              ;输出姓名
+  MOV   AH, 9
+  LEA   DX, TAB[BP].NAM
+  INT   21H                           ;输出姓名
+  MOV   AH, 2
+  MOV   DL, ','
+  INT   21H                           ;输出分号
+  MOV   AH, 9
+  LEA   DX, TAB[BP].ID
+  INT   21H                           ;输出学号
   MOV   AH,2
   MOV   DL,','
-  INT   21H
-  MOV   AH,9
-  LEA   DX,TAB[BP].ID
-  INT   21H
-  ;PRINTSTR TAB[BP].ID               ;输出学号
-  ;PRINTCHAR ','
-  MOV   AH,2
-  MOV   DL,','
-  INT   21H
-  MOV BX, WORD PTR TAB[BP].S_ZC     ;组成原理成绩
+  INT   21H                           ;输出分号
+  MOV BX, WORD PTR TAB[BP].S_ZC       ;组成原理成绩
   CALL TERN
-  PRINTCHAR ','
-  MOV BX, WORD PTR TAB[BP].S_DS     ;数据结构成绩
+  PRINTCHAR ','                       ;输出分号
+  MOV BX, WORD PTR TAB[BP].S_DS       ;数据结构成绩
   CALL TERN
-  PRINTCHAR ','
-  MOV BX, WORD PTR TAB[BP].S_HB     ;汇编语言成绩
+  PRINTCHAR ','                       ;输出分号
+  MOV BX, WORD PTR TAB[BP].S_HB       ;汇编语言成绩
   CALL TERN
-  PRINTCHAR ','
-  MOV BX, WORD PTR TAB[BP].S_AL     ;总成绩
+  PRINTCHAR ','                       ;输出分号
+  MOV BX, WORD PTR TAB[BP].S_AL       ;总成绩
   CALL TERN
   HUANHANG
 
@@ -488,7 +451,6 @@ PRINT_STU PROC
   MOV BX, 0
 LOP_PRINT_STU:
   PRINT_STU_ITEM
-  ;OUTALL
   ADD BP, 30                        ;下一个学生的成绩
   INC BX
   CMP BX, AX
