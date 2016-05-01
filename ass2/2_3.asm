@@ -242,13 +242,14 @@ STU ENDS
 DATASG SEGMENT
   TAB STU 10 DUP(<>)          ;存放10个学生的成绩
   BUF DB  30, ?, 30 DUP(?)    ;输入缓冲区
-  STU_NUM DW 5               ;学生的个数
+  STU_NUM DW 3               ;学生的个数
   FLAG DB  0                  ;二进制转十进制用
   MSG_INPUT1 DB 'Please input 10 students'' info, every line please input only one value$'
   MSG_INPUT2 DB 'Order: name, number, component score, data structure score, assemlby score$'
   MSG_INPUT3 DB 'Please input a student'' name, id and score, every line has only one field:$'
   MSG_INPUT4 DB 'The student'' info has been recorded.$'
   MSG_SELECT DB 'Please select a number:$'
+  MSG_S_ERR  DB 'Choice must between 1 and 3$'
   MSG_TAB    DB '----- 1: Show top 3       -----', CR, LF
              DB '----- 2: Show NO.1 - NO.5 -----', CR, LF
              DB '----- 3: Quit             -----', CR, LF, '$'    ;菜单提示信息
@@ -279,11 +280,11 @@ REPEAT:
 READ_SELECT:
   MOV AH, 1                   ;等待输入选择号
   INT 21H
-
+  HUANHANG
   CMP AL, 31H                 ;选择合法性检查
   JB BEEP			                ;若非法则转移
   CMP AL, 33H
-  JA BEEP			                ;输入的功能号应在'31' - '33'之间
+  JA BEEP			                ;输入的数字必须在1和3之间
 
   AND AL, 0FH	   	            ;ASCII码转换为非压缩BCD码
   XOR AH, AH		              ;(AX)＝功能号
@@ -294,22 +295,8 @@ READ_SELECT:
   JMP [BX]			              ;按表项地址转移
 
 BEEP:
-	MOV AH, 3
-	MOV BH, 0
-	INT 10H			                ;读光标位置
-
-	CMP DL, 0
-	JZ  NOBACK		              ;如果光标位于0列,则不用再回退一格
-
-	MOV AH, 2
-	DEC DL
-	INT 10H			                ;让光标回退一格,即让下一次输入的功能号覆盖此次的错误输入
-
-NOBACK:
-	MOV AH, 14	 	              ;响铃警告
-  MOV AL, 7
-  INT 10H
-  JMP SHORT READ_SELECT       ;转重新选择
+	PRINTLNSTR MSG_S_ERR        ;输出错误信息
+  JMP REPEAT            ;转重新选择
 
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
   CALL  SORT_BY_SCORE
