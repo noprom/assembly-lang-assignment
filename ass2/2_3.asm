@@ -300,10 +300,9 @@ MAIN PROC
   PRINTLNSTR MSG_INPUT1       ;输出请输入的提示信息
   PRINTLNSTR MSG_INPUT2
   CALL INPUT_STU              ;输入数据
-  ;# TODO:
-  MOV AX, STU_NUM
-  CALL PRINT_STU
-  JMP QUIT
+  ;MOV AX, STU_NUM
+  ;CALL PRINT_STU
+  ;JMP QUIT
 
 REPEAT:
   PRINTLNSTR MSG_TAB          ;跳转表法来选择所要执行的操作
@@ -330,9 +329,8 @@ BEEP:
   JMP REPEAT            ;转重新选择
 
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
-  CALL  SORT_BY_SCORE
+  CALL SORT_BY_SCORE
   MOV AX, 3
-  ;PRINTCHAR '3'
   CALL PRINT_STU
 
   MOV AH, 0
@@ -340,9 +338,8 @@ SHOW_TOP_3:                   ;显示排名前三的同学的成绩
   JMP REPEAT		              ;返回菜单
 
 SHOW_NO1_5:                   ;显示学号前5的同学的成绩
-  CALL  SORT_BY_ID
+  CALL SORT_BY_ID
   MOV AX, 5
-  ;PRINTCHAR '5'
   CALL PRINT_STU
 
   MOV AH, 0
@@ -475,8 +472,8 @@ PRINT_STU PROC
   MOV BP, 0
   MOV BX, 0
 LOP_PRINT_STU:
-  ;PRINT_STU_ITEM
-  OUTALL
+  PRINT_STU_ITEM
+  ;OUTALL
   ADD BP, 30                        ;下一个学生的成绩
   INC BX
   CMP BX, AX
