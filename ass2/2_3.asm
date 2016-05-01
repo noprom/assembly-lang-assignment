@@ -135,7 +135,7 @@ INPUT:
   INT 21H
   SUB AL, 30H           ;ASCII转化为二进制数
   JL MOVE
-  SUB AL, 39H
+  CMP AL, 9
   JG MOVE               ;输入不是数字则停止输入
   CBW                   ;否则对AL进行位扩展
   XCHG AX, BX
