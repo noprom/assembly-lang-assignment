@@ -49,3 +49,22 @@ STACKSG ENDS
 DATASG SEGMENT
   MSG_INPUT DB 'Please input n:$'
 DATASG ENDS
+
+;-----------------------------------------------------;
+;代码段
+;-----------------------------------------------------;
+CODESG SEGMENT
+  ASSUME CS: CODESG, DS: DATASG, SS: STACKSG
+
+MAIN PROC FAR
+  MOV AX, DATASG
+  MOV DS, AX
+
+  PRINTSTR MSG_INPUT
+  
+
+  MOV AX, 4C00H
+  INT 21H
+MAIN ENDP
+CODESG ENDS
+END MAIN
