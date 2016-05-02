@@ -61,10 +61,56 @@ MAIN PROC FAR
   MOV DS, AX
 
   PRINTSTR MSG_INPUT
-  
+INPUTN:             ;输入N并且保存在BX中
+  MOV AH, 1
+  INT 21H
+  SUB AL, 30H       ;转为二进制
+  JL CONTINUE
+  CMP AL, 9
+  JG CONTINUE
+  CBW               ;AL扩展为AX
+  XCHG AX, BX
+  MOV CX, 10
+  MUL CX
+  XCHG AX, BX       ;BX中的数据乘10
+  ADD BX, AX        ;加上现在读入的数字
+  JMP INPUTN
+CONTINUE:
+  CALL FIB
+
+
 
   MOV AX, 4C00H
   INT 21H
 MAIN ENDP
+
+;-----------------------------------------------------;
+;递归求斐波拉,N存放在BX中,结果存放在CX中
+;-----------------------------------------------------;
+FIB PROC
+  PUSH BX
+  PUSH DX            ;寄存器入栈
+
+  CMP BX, 1
+  JLE FIB1            ;FIB(1)
+
+  DEC BX
+  CALL FIB            ;FIB(N-1)
+  MOV DX, CX          ;[DX]=FIB(N-1)
+
+  DEC BX
+  CALL FIB            ;FIB(N-2)
+  MOV AX, CX          ;[AX]=FIB(N-2)
+
+  ADD AX, DX          ;[AX]=FIB(N)
+  MOV CX, AX
+  JMP EXIT_FIB        ;CX中保存FIB(N)
+FIB1:
+  MOV CX, 1
+EXIT_FIB:
+  POP DX
+  POP BX             ;寄存器出栈
+  RET
+FIB ENDP
 CODESG ENDS
 END MAIN
