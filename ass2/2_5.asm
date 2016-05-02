@@ -37,6 +37,20 @@ PRINTCHAR MACRO CHAR
 ENDM
 
 ;-----------------------------------------------------;
+;输出一个FIN(n)=
+;-----------------------------------------------------;
+PRINTFIB MACRO
+  PUSH BX
+  PRINTSTR MSG_FIN      ;输出FIB(
+  CALL TERN
+  PRINTCHAR ')'
+  PRINTCHAR '='
+  MOV BX, CX
+  CALL TERN             ;输出FIB(N)的值
+  POP BX
+ENDM
+
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -48,6 +62,7 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   MSG_INPUT DB 'Please input n:$'
+  MSG_FIN DB 'FIN($'
   FLAG DB 0
 DATASG ENDS
 
@@ -79,8 +94,8 @@ INPUTN:             ;输入N并且保存在BX中
 CONTINUE:
   CALL FIB
 
-  MOV BX, CX
-  CALL TERN         ;输出FIB(N)
+  ;输出结果
+  PRINTFIB
 
   MOV AX, 4C00H
   INT 21H
