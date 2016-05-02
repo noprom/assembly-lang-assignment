@@ -93,8 +93,8 @@ FIB PROC
   PUSH BX
   PUSH DX            ;寄存器入栈
 
-  CMP BX, 1
-  JLE FIB1            ;FIB(1)
+  CMP BX, 2
+  JLE FIB1            ;FIB(1)和FIB(2)
 
   DEC BX
   CALL FIB            ;FIB(N-1)
