@@ -1,6 +1,6 @@
 ;; Author: noprom <tyee.noprom@qq.com>
 ;; Data: 2016/5/2 1:48PM
-;; Title: 实验二(5):递归程序实现斐波拉数列
+;; Title: 实验二(5):递归程序实现斐波那契数列
 
 ;------------------------定义符号----------------------;
 CR EQU 0DH                            ;回车符的ASCII值
@@ -48,6 +48,7 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   MSG_INPUT DB 'Please input n:$'
+  FLAG DB 0
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -78,14 +79,15 @@ INPUTN:             ;输入N并且保存在BX中
 CONTINUE:
   CALL FIB
 
-
+  MOV BX, CX
+  CALL TERN         ;输出FIB(N)
 
   MOV AX, 4C00H
   INT 21H
 MAIN ENDP
 
 ;-----------------------------------------------------;
-;递归求斐波拉,N存放在BX中,结果存放在CX中
+;递归求斐波那契,N存放在BX中,结果存放在CX中
 ;-----------------------------------------------------;
 FIB PROC
   PUSH BX
@@ -112,5 +114,66 @@ EXIT_FIB:
   POP BX             ;寄存器出栈
   RET
 FIB ENDP
+
+;-----------------------------------------------------;
+;二进制转化为十进制输出
+;-----------------------------------------------------;
+TERN	PROC
+		;二进制十进制转化
+    PUSH  CX
+		MOV 	FLAG,0		;标志位初始化
+
+		MOV		CX,10000
+		CALL	DEC_DIV
+
+		MOV		CX,1000
+		CALL	DEC_DIV
+
+		MOV		CX,100
+		CALL 	DEC_DIV
+
+		MOV		CX,10
+		CALL 	DEC_DIV
+
+		MOV		CX,1
+		CALL	DEC_DIV
+
+		CMP 	FLAG,0 		;若FLAG为0则证明要输出的二进制数为0
+		JG 		TEXIT
+		MOV 	AH,2 		  ;若要输出的二进制数为0,则这个数不会被DIV_DEC输出
+		MOV 	DL,'0' 		;因此在这里输出0
+		INT 	21H
+TEXIT:
+    POP   CX
+		RET
+TERN 	ENDP
+
+DEC_DIV PROC
+
+    PUSH  AX
+		MOV		AX,BX
+		MOV 	DX,0
+
+		DIV 	CX
+		MOV		BX,DX
+
+		MOV 	DL,AL
+		ADD 	DL,30H
+
+		CMP		FLAG,0
+		JG 		FLAG1 		;FLAG为1,说明之前有非0位,直接输出
+		CMP 	DL,'0' 		;FLAG非0,说明之前全部为0位,将当前位于0比较
+		JE 		NP   		  ;当前位为0,不输出
+		MOV 	FLAG,1 		;当前位不为0,将FLAG置1
+FLAG1:
+		;输出当前位
+		MOV		AH,2
+		INT 	21H
+NP:
+		;跳转至此则不输出当前位
+    POP   AX
+		RET
+DEC_DIV	ENDP
+
 CODESG ENDS
 END MAIN
