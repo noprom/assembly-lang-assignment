@@ -70,6 +70,44 @@ MAIN PROC FAR
 ;------------------主程序其他功能----------------------;
   PRINTCHAR MSG_START
 
+  ;OTHER  FUNCTION
+	MOV	AH,6		  ;以蓝底白字清屏
+	MOV	AL,0
+	MOV	BH,1FH
+	MOV	CX,0
+	MOV	DX,184FH
+	INT	10H
+
+	MOV	AL,0
+PRINT0:
+	PUSH	AX		;保存显示的字符
+	MOV	AH,1		;等待输入
+	INT	21H
+	OR	AL,20H		;大写字母转换为小写
+	CMP	AL,'q'		;退出？
+	POP	AX		;恢复显示的字符
+	JE	EXIT_MAIN		;若退出则转
+
+	INC	AL		;ASCII值加1形成本次要
+				;显示的字符
+	MOV	DX,0002H		;初始化行、列号
+	MOV	BH,0		;页号
+
+PRINT10:
+	INC	DH		;行号加1
+	CMP	DH,24		;已到最下面一行？
+	JA	PRINT0
+	ADD	DL,3		;列号加3
+	MOV	AH,2		;设置光标位置
+	INT	10H
+
+	MOV	AH,9		;显示字符和属性
+	MOV	BL,1FH		;蓝底白字
+	MOV	CX,1
+	INT	10H
+
+	JMP	PRINT10		;继续显示
+
 ;------------------恢复原中断向量----------------------;
 EXIT_MAIN:
   POP DX                      ;(6)恢复1CH中断向量
@@ -77,6 +115,13 @@ EXIT_MAIN:
   MOV AH, 25H
   MOV AL, 1CH
   INT 21H
+
+  MOV	AH,6		  ;以黑底白字清屏
+  MOV	AL,0
+  MOV	BH,07H
+  MOV	CX,0
+  MOV	DX,184FH
+  INT	10H
 
   MOV AX, 4C00H               ;返回操作系统
   INT 21H
