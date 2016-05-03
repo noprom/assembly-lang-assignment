@@ -46,7 +46,19 @@ MAIN PROC FAR
   AND AL, 11111100B	          ;增设键盘和定时器中断
   OUT 21H, AL
 
-  MOV AX, 4C00H
+  STI                         ;(4)开中断
+;------------------主程序其他功能----------------------;
+
+
+;------------------恢复原中断向量----------------------;
+EXIT:
+  POP DX                      ;恢复1CH中断向量
+  POP DS
+  MOV AH, 25H
+  MOV AL, 1CH
+  INT 21H
+
+  MOV AX, 4C00H               ;返回操作系统
   INT 21H
 MAIN ENDP
 
