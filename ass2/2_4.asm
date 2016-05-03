@@ -35,6 +35,7 @@ DATASG SEGMENT
   COUNT DW 1                  ;COUNT为0.5秒的时间计数值
   MSG_START DB '*'            ;显示的*号
   CHAR	  DB	01H	;在中断子程序中显示的笑脸字符初始值
+  COLOR DB  0FH
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -68,7 +69,6 @@ MAIN PROC FAR
 
   STI                         ;(5)开中断
 ;------------------主程序其他功能----------------------;
-  PRINTCHAR MSG_START
 
   ;OTHER  FUNCTION
 	MOV	AH,6		  ;以蓝底白字清屏
@@ -87,26 +87,6 @@ PRINT0:
 	CMP	AL,'q'		;退出？
 	POP	AX		;恢复显示的字符
 	JE	EXIT_MAIN		;若退出则转
-
-	INC	AL		;ASCII值加1形成本次要
-				;显示的字符
-	MOV	DX,0002H		;初始化行、列号
-	MOV	BH,0		;页号
-
-PRINT10:
-	INC	DH		;行号加1
-	CMP	DH,24		;已到最下面一行？
-	JA	PRINT0
-	ADD	DL,3		;列号加3
-	MOV	AH,2		;设置光标位置
-	INT	10H
-
-	MOV	AH,9		;显示字符和属性
-	MOV	BL,1FH		;蓝底白字
-	MOV	CX,1
-	INT	10H
-
-	JMP	PRINT10		;继续显示
 
 ;------------------恢复原中断向量----------------------;
 EXIT_MAIN:
@@ -138,33 +118,17 @@ INT_1CH PROC FAR              ;新1CH中断处理子程序
   MOV	AX, DATASG
   MOV	DS, AX
 
-  DEC	COUNT
-  JNZ	EXIT
+  ADD   COLOR,10H
+  AND   COLOR,01111111B
 
-  MOV	AH,3
-  MOV	BH,0
-  INT	10H
-  PUSH	DX		;读当前光标位置并保存
-
-  MOV	AH,2		;设光标于第一行,最后一列
-  MOV	BH,0
-  MOV	DH,0
-  MOV	DL,79
-  INT	10H
-
-  MOV	AH,0EH
-  MOV	BH,0
-  MOV	AL,CHAR		;显示笑脸字符
-  INT	10H
-
-  MOV	AH,2
-  MOV	BH,0
-  POP	DX
-  INT	10H		;恢复原光标位置
-
-  XOR	CHAR,00000011B	;笑脸字符求反,以反色显示
-
-  MOV	COUNT,91	;5秒计数值重新初始化
+  MOV   BH,COLOR
+  MOV   AH,6
+  MOV   AL,0
+  MOV   CH,0
+  MOV   CL,0
+  MOV   DH,80
+  MOV   DL,80
+  INT   10H
 
 EXIT:
   CLI                         ;(4)关中断
