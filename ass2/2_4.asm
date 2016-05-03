@@ -22,6 +22,32 @@ PRINTCHAR MACRO CHAR
 ENDM
 
 ;-----------------------------------------------------;
+;改变背景颜色
+;-----------------------------------------------------;
+CHG_COLOR MACRO
+  PUSH AX
+  PUSH BX
+  PUSH CX
+  PUSH DX
+
+  ADD COLOR, 10H
+  AND COLOR, 01111111B
+  MOV BH, COLOR
+  MOV AH, 6
+  MOV AL, 0
+  MOV CH, 0
+  MOV CL, 0
+  MOV DH, 80
+  MOV DL, 80
+  INT 10H
+
+  POP DX
+  POP CX
+  POP BX
+  POP AX
+ENDM
+
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -34,8 +60,9 @@ STACKSG ENDS
 DATASG SEGMENT
   COUNT DW 1                  ;COUNT为0.5秒的时间计数值
   MSG_START DB '*'            ;显示的*号
-  CHAR	  DB	01H	;在中断子程序中显示的笑脸字符初始值
-  COLOR DB  0FH
+  CHAR DB	01H	                ;在中断子程序中显示的笑脸字符初始值
+  COLOR DB 0FH                ;背景颜色
+  CNT_COLOR DB 10             ;颜色改变计数器
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -118,17 +145,13 @@ INT_1CH PROC FAR              ;新1CH中断处理子程序
   MOV	AX, DATASG
   MOV	DS, AX
 
-  ADD   COLOR,10H
-  AND   COLOR,01111111B
-
-  MOV   BH,COLOR
-  MOV   AH,6
-  MOV   AL,0
-  MOV   CH,0
-  MOV   CL,0
-  MOV   DH,80
-  MOV   DL,80
-  INT   10H
+  DEC CNT_COLOR
+  CMP CNT_COLOR, 0
+  JE CH_BG
+  JMP EXIT
+CH_BG:
+  CHG_COLOR
+  MOV CNT_COLOR, 10
 
 EXIT:
   CLI                         ;(4)关中断
