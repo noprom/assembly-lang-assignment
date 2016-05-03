@@ -2,11 +2,30 @@
 ;; Data: 2016/5/2 1:44PM
 ;; Title: 实验二(4):*在界面以0.1s的间隔随机移动,每隔0.5s界面背景颜色改变
 
+;------------------------定义符号----------------------;
+CR EQU 0DH                            ;回车符的ASCII值
+LF EQU 0AH                            ;换行符的ASCII值
+
+;-----------------------------------------------------;
+;输出一个字符的内容
+;-----------------------------------------------------;
+PRINTCHAR MACRO CHAR
+	PUSH AX
+	PUSH DX
+
+  MOV AH, 2
+  MOV DL, CHAR
+  INT 21H
+
+	POP DX
+	POP AX
+ENDM
+
 ;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
-  DW 256 DUP 'ST'
+  DW 256 DUP('ST')
 STACKSG ENDS
 
 ;-----------------------------------------------------;
@@ -14,7 +33,8 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   COUNT DW 1                  ;COUNT为0.5秒的时间计数值
-  START DB '*'                ;显示的*号
+  MSG_START DB '*'            ;显示的*号
+  CHAR	  DB	01H	;在中断子程序中显示的笑脸字符初始值
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -43,16 +63,16 @@ MAIN PROC FAR
   POP DS
 
   IN AL, 21H
-  AND AL, 11111100B	          ;增设键盘和定时器中断
+  AND AL, 11111100B	          ;(4)增设键盘和定时器中断
   OUT 21H, AL
 
-  STI                         ;(4)开中断
+  STI                         ;(5)开中断
 ;------------------主程序其他功能----------------------;
-
+  PRINTCHAR MSG_START
 
 ;------------------恢复原中断向量----------------------;
-EXIT:
-  POP DX                      ;恢复1CH中断向量
+EXIT_MAIN:
+  POP DX                      ;(6)恢复1CH中断向量
   POP DS
   MOV AH, 25H
   MOV AL, 1CH
@@ -62,5 +82,53 @@ EXIT:
   INT 21H
 MAIN ENDP
 
+INT_1CH PROC FAR              ;新1CH中断处理子程序
+  PUSH AX
+  PUSH BX
+  PUSH CX
+  PUSH DX
+  PUSH DS                     ;(1)保存寄存器
+  STI                         ;(2)开中断
+;------------------(3)处理中断----------------------;
+  MOV	AX, DATASG
+  MOV	DS, AX
+
+  DEC	COUNT
+  JNZ	EXIT
+
+  MOV	AH,3
+  MOV	BH,0
+  INT	10H
+  PUSH	DX		;读当前光标位置并保存
+
+  MOV	AH,2		;设光标于第一行,最后一列
+  MOV	BH,0
+  MOV	DH,0
+  MOV	DL,79
+  INT	10H
+
+  MOV	AH,0EH
+  MOV	BH,0
+  MOV	AL,CHAR		;显示笑脸字符
+  INT	10H
+
+  MOV	AH,2
+  MOV	BH,0
+  POP	DX
+  INT	10H		;恢复原光标位置
+
+  XOR	CHAR,00000011B	;笑脸字符求反,以反色显示
+
+  MOV	COUNT,91	;5秒计数值重新初始化
+
+EXIT:
+  CLI                         ;(4)关中断
+	POP DS
+	POP	DX
+	POP	CX
+	POP	BX
+  POP	AX		                  ;(5)恢复寄存器
+  IRET                        ;(6)中断返回
+INT_1CH ENDP
 CODESG ENDS
 END MAIN
