@@ -152,10 +152,9 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATASG SEGMENT
   MSG DB 'Please input n(n<=10): $'
-  CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'N must in the range of [1, 10]$'
-  BETWEEN DB '     $'     ;第1种是首数字1之后的空格
-  BACK DB ' $'            ;第2种是和需显示的数字位数相关的空格
+  BETWEEN DB '     $'     ;首数字1之后的空格
+  BACK DB ' $'            ;与数字位数相关的空格
   a DW ?               		;a为阶数
   b DW ?               		;b为行数
   c DW ?               		;c为计算时每一项的中间除数,依次递增
