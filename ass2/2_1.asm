@@ -116,7 +116,15 @@ ENDM
 ;计算杨辉三角
 ;-----------------------------------------------------;
 CALCULATE MACRO
-LOCAL START
+LOCAL START, EXIT
+	MOV AX, BP            ;准备显示杨辉三角,AX=BP=输入的阶数
+  PRINTCHAR '1'         ;输出第一个1
+  CMP BP, 2             ;将阶数与2进行比较
+  JB EXIT               ;小于则直接退出
+  MOV b, 2              ;b=2
+  MOV CX, BP            ;此时CX=阶数
+  MOV a, BP             ;a=阶数
+  DEC a
 START:
   MOV c, 1
   ENTER
@@ -132,6 +140,7 @@ START:
   DEC CX
   CMP CX,1
   JA START
+EXIT:
 ENDM
 
 ;-------------------------堆栈段-----------------------;
@@ -162,14 +171,6 @@ MAIN PROC
   MOV DS,AX
 
 	INPUTN								;输入N,直到在1-10之间
-  MOV AX, BP            ;准备显示杨辉三角,AX=BP=输入的阶数
-  PRINTCHAR '1'         ;输出第一个1
-  CMP BP, 2             ;将阶数与2进行比较
-  JB  exit              ;小于则直接退出
-  MOV b, 2              ;b=2
-  MOV CX, BP            ;此时CX=阶数
-  MOV a, BP             ;a=阶数
-  DEC a
 	CALCULATE							;计算并且显示杨辉三角
 exit:
   MOV AH,4CH
