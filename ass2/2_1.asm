@@ -50,19 +50,24 @@ ENDM
 ;输出空格
 ;-----------------------------------------------------;
 PRINTSPACE MACRO
-	LOCAL next, done
+	PUSH AX
+	PUSH BX
+	PUSH DX
+	LOCAL NEXT, DONE
 
   MOV BX, AX
   MOV AH, 9
   LEA DX, BACK
-next:
+NEXT:
   CMP BX, 0
-  JZ done
+  JZ DONE
   INT 21H
   DEC BX
-  JMP next
-done:
-  NOP
+  JMP NEXT
+DONE:
+	POP DX
+	POP BX
+	POP AX
 ENDM
 
 ;-----------------------------------------------------;
@@ -112,7 +117,7 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 ;数据段定义
 ;-----------------------------------------------------;
-DATA SEGMENT
+DATASG SEGMENT
   MSG DB 'Please input n(n<=10): $'
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'N must in the range of [1, 10]$'
@@ -122,14 +127,14 @@ DATA SEGMENT
   b DW ?               		;b为行数
   c DW ?               		;c为计算时每一项的中间除数,依次递增
   d DW ?               		;记录位数，用来控制空格的数目
-DATA ENDS
+DATASG ENDS
 ;-----------------------------------------------------;
 ;代码段
 ;-----------------------------------------------------;
-CODE SEGMENT
-  ASSUME CS:CODE,DS:DATA,SS:STACKSG
+CODESG SEGMENT
+  ASSUME CS: CODESG,DS: DATASG,SS: STACKSG
 MAIN PROC
-  MOV AX,DATA
+  MOV AX,DATASG
   MOV DS,AX
 
 	INPUTN								;输入N,直到在1-10之间
@@ -208,5 +213,5 @@ PRINTNUM:
 ok2:
   RET
 
-CODE ENDS
+CODESG ENDS
 END MAIN
