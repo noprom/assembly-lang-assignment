@@ -96,17 +96,17 @@ INPUT_N:
   ADD BP, AX  					;加一位
   LOOP INPUT_N
 
-	CMP BP, 0             ; 输入的数存在BP，与0比较
-	JG J1                 ; 如果输入的数字>0,继续判断
-	PRINTLN ERROR         ; 否则提示错误的输入信息
-	JMP START             ; 无条件跳转到MAIN，重新开始
+	CMP BP, 0             ;输入的数存在BP，与0比较
+	JG J1                 ;如果输入的数字>0,继续判断
+	PRINTLN ERROR         ;否则提示错误的输入信息
+	JMP START             ;无条件跳转到MAIN，重新开始
 J1:
-	CMP BP,11             ; 输入的数存在BP，与11比较
-	JB OK                 ; 如果输入的数字<11则满足条件，允许执行
-	PRINTLN ERROR         ; 否则提示错误的输入信息
-	JMP START             ; 无条件跳转到MAIN，重新开始
+	CMP BP,11             ;输入的数存在BP，与11比较
+	JB OK                 ;如果输入的数字<11则满足条件，允许执行
+	PRINTLN ERROR         ;否则提示错误的输入信息
+	JMP START             ;无条件跳转到MAIN，重新开始
 OK:
-	ENTER                 ; 换行
+	ENTER                 ;换行
 	POP AX
 	POP BX
 	POP CX
@@ -130,7 +130,7 @@ START:
   ENTER
   DEC BP
   MOV AX, BP
-  PRINTCHAR '1'        ; 首个数字为1
+  PRINTCHAR '1'         ;首个数字为1
   PRINT BETWEEN
   MOV AX,1
   PUSH b
@@ -169,8 +169,8 @@ MAIN PROC
   MOV AX,DATASG
   MOV DS,AX
 
-	INPUTN								;输入N,直到在1-10之间
-	CALCULATE							;计算并且显示杨辉三角
+	INPUTN							 	 ;输入N,直到在1-10之间
+	CALCULATE						 	 ;计算并且显示杨辉三角
 exit:
   MOV AH,4CH
   INT 21H
@@ -180,21 +180,21 @@ MAIN ENDP
 ;计算每一项数值
 ;-----------------------------------------------------;
 CALCNUM PROC
-	DEC b     				; b每次减1相乘
+	DEC b     						;b每次减1相乘
   MUL b
-  DIV c             ; 除以c，再加1
+  DIV c             		;除以c，再加1
   INC c
-  CMP b,0           ; b是否为0
+  CMP b,0           		;b是否为0
   JZ ok1
 
-  PUSH AX           ; 保存所得数据
-  MOV d,0           ; 此处d为位数，为了显示后面的空格
+  PUSH AX           		;保存所得数据
+  MOV d,0           		;此处d为位数，为了显示后面的空格
   CALL PRINTNUM
-  MOV AX,6          ; 预设，总共显示的空格数为6个单位
-  SUB AX,d          ; 还需显示多少空格
+  MOV AX,6          		;预设，总共显示的空格数为6个单位
+  SUB AX,d          		;还需显示多少空格
 	PRINTSPACE
   POP AX
-  CALL CALCNUM      ; 继续执行
+  CALL CALCNUM      		;继续执行
 ok1:
   RET
 CALCNUM ENDP
@@ -203,18 +203,18 @@ CALCNUM ENDP
 ;显示一项数字
 ;-----------------------------------------------------;
 PRINTNUM PROC
-  MOV BX, 10       ; BX中存除数10
+  MOV BX, 10       			;BX中存除数10
   CMP AX, 0
-  JZ ok2           ; 除法运算是否完毕
-  INC d            ; 此处d为位数，以确定输出的空格数
-  DIV BL           ; 除以10，整数商存在AL，余数存在AH
+  JZ ok2           			;除法运算是否完毕
+  INC d            			;此处d为位数，以确定输出的空格数
+  DIV BL           			;除以10，整数商存在AL，余数存在AH
   PUSH AX
-  AND AX, 00FFH    ; 屏蔽高八位，取商
+  AND AX, 00FFH    			;屏蔽高八位，取商
   CALL PRINTNUM
   POP DX
-  MOV DL, DH       ; 取出高八位，即为要显示的余数
-  OR DL, 30H       ; 转为ASCII码
-  MOV AH, 2        ; 显示出数字
+  MOV DL, DH       			;取出高八位，即为要显示的余数
+  OR DL, 30H       			;转为ASCII码
+  MOV AH, 2        			;显示出数字
   INT 21H
 ok2:
   RET
