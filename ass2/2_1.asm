@@ -89,27 +89,28 @@ DATA ENDS
 ;-----------------------------------------------------;
 CODE SEGMENT
   ASSUME CS:CODE,DS:DATA,SS:STACKSG
+
 ;-----------------------------------------------------;
 ;输入子程序,数字存放在BP中
 ;-----------------------------------------------------;
-SHURU PROC
-  XOR BP,BP ;BP清零
-  MOV BX,10
-  MOV CX,3  ;控制输入的位数,2位数加上一个回车
-input:
-  MOV AH,1  ;从键盘读入数据
+INPUT PROC
+  XOR BP, BP ;BP清零
+  MOV BX, 10
+  MOV CX, 3  ;控制输入的位数,2位数加上一个回车
+input_n:
+  MOV AH, 1  ;从键盘读入数据
   INT 21H
-  CMP AL,0DH
+  CMP AL, 0DH
   JZ OK       ;如果回车则输入完毕
-  SUB AL,30H  ;转为十六位二进制数
+  SUB AL, 30H ;转为十六位二进制数
   CBW         ;字节扩展为字
-  XCHG AX,BP  ;交换到AX中
+  XCHG AX, BP ;交换到AX中
   MUL BX      ;扩大十倍
-  ADD BP,AX   ;加一位
-  LOOP input
+  ADD BP, AX  ;加一位
+  LOOP input_n
 OK:
   RET
-SHURU ENDP
+INPUT ENDP
 
 START:
   MOV AX,DATA
@@ -119,7 +120,7 @@ START:
 ;-----------------------------------------------------;
 MAIN:
   PRINT MSG             ; 输出字符串，请输入一个数
-  CALL SHURU            ; 调用输入函数,显示输入的数
+  CALL INPUT            ; 调用输入函数,显示输入的数
   CMP BP, 0             ; 输入的数存在BP，与0比较
   JG J1                 ; 如果输入的数字>0,继续判断
   PRINTLN ERROR         ; 否则提示错误的输入信息
