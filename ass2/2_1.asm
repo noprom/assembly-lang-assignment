@@ -38,7 +38,7 @@ ENDM
 ;-----------------------------------------------------;
 ;换行宏定义
 ;-----------------------------------------------------;
-HUANH MACRO
+ENTER MACRO
   MOV AH, 2
   MOV DL, 0DH
   INT 21H
@@ -129,9 +129,9 @@ J1:CMP BP,11            ; 输入的数存在BP，与11比较
   PRINTLN ERROR         ; 否则提示错误的输入信息
   JMP MAIN              ; 无条件跳转到MAIN，重新开始
 
-MZTJ: HUANH
+MZTJ: ENTER
   PRINT RESULT          ; 显示提示字符串
-  HUANH                 ; 换行
+  ENTER                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   PRINTCHAR '1'         ; 输出第一个1
   CMP BP, 2             ; 将阶数与2进行比较
@@ -143,14 +143,14 @@ MZTJ: HUANH
   CALL CALCYHSJ         ; 调用CALCYHSJ子程序
 
 exit:
-  HUANH
+  ENTER
   JMP NEAR PTR input1
 ;-----------------------------------------------------;
 ;输出杨辉三角
 ;-----------------------------------------------------;
 CALCYHSJ:
   MOV c, 1
-  HUANH
+  ENTER
   DEC BP
   MOV AX, BP
   PRINTCHAR '1'        ; 首个数字为1
@@ -167,13 +167,13 @@ CALCYHSJ:
 ;输入询问模块
 ;-----------------------------------------------------;
 input1:             ; 判断是否还需要继续输入
-  HUANH
+  ENTER
   PRINT CON         ; 显示提问字符串,继续?
   MOV AH,1          ; 键盘输入数据
   INT 21H
   CMP AL, 59H        ; 判断是否继续
   JNZ exit1
-  HUANH
+  ENTER
   JMP NEAR PTR MAIN ; 段内直接近转移,可以转移到段内
 exit1:              ; 不继续输入则退出程序
   MOV AH,4CH
