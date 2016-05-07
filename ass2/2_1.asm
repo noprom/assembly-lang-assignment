@@ -100,18 +100,20 @@ INPUT_N:
 	JG J1                 ; 如果输入的数字>0,继续判断
 	PRINTLN ERROR         ; 否则提示错误的输入信息
 	JMP START             ; 无条件跳转到MAIN，重新开始
-	J1:CMP BP,11          ; 输入的数存在BP，与11比较
-	JB MZTJ               ; 如果输入的数字<11则满足条件，允许执行
+J1:
+	CMP BP,11             ; 输入的数存在BP，与11比较
+	JB OK                 ; 如果输入的数字<11则满足条件，允许执行
 	PRINTLN ERROR         ; 否则提示错误的输入信息
 	JMP START             ; 无条件跳转到MAIN，重新开始
 OK:
+	ENTER                 ; 换行
 	POP AX
 	POP BX
 	POP CX
 ENDM
 
 ;-----------------------------------------------------;
-;输出杨辉三角
+;计算杨辉三角
 ;-----------------------------------------------------;
 CALCULATE MACRO
 LOCAL START
@@ -160,27 +162,24 @@ MAIN PROC
   MOV DS,AX
 
 	INPUTN								;输入N,直到在1-10之间
-
-MZTJ:
-  ENTER                 ; 换行
-  MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
-  PRINTCHAR '1'         ; 输出第一个1
-  CMP BP, 2             ; 将阶数与2进行比较
-  JB  exit              ; 小于则直接退出
-  MOV b, 2              ; b=2
-  MOV CX, BP            ; 此时CX=阶数
-  MOV a, BP             ; a=阶数
+  MOV AX, BP            ;准备显示杨辉三角,AX=BP=输入的阶数
+  PRINTCHAR '1'         ;输出第一个1
+  CMP BP, 2             ;将阶数与2进行比较
+  JB  exit              ;小于则直接退出
+  MOV b, 2              ;b=2
+  MOV CX, BP            ;此时CX=阶数
+  MOV a, BP             ;a=阶数
   DEC a
-  ;CALL CALCYHSJ         ; 调用CALCYHSJ子程序
-	CALCULATE
-
+	CALCULATE							;计算并且显示杨辉三角
 exit:
   MOV AH,4CH
   INT 21H
+MAIN ENDP
+
 ;-----------------------------------------------------;
-;核心计算模块
+;计算每一项数值
 ;-----------------------------------------------------;
-CALCNUM:
+CALCNUM PROC
 	DEC b     				; b每次减1相乘
   MUL b
   DIV c             ; 除以c，再加1
@@ -198,10 +197,12 @@ CALCNUM:
   CALL CALCNUM      ; 继续执行
 ok1:
   RET
+CALCNUM ENDP
+
 ;-----------------------------------------------------;
-;显示模块
+;显示一项数字
 ;-----------------------------------------------------;
-PRINTNUM:
+PRINTNUM PROC
   MOV BX, 10       ; BX中存除数10
   CMP AX, 0
   JZ ok2           ; 除法运算是否完毕
@@ -217,6 +218,7 @@ PRINTNUM:
   INT 21H
 ok2:
   RET
+PRINTNUM ENDP
 
 CODESG ENDS
 END MAIN
