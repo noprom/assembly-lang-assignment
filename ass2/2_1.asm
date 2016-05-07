@@ -50,10 +50,10 @@ ENDM
 ;输出空格
 ;-----------------------------------------------------;
 PRINTSPACE MACRO
+	LOCAL NEXT, DONE
 	PUSH AX
 	PUSH BX
 	PUSH DX
-	LOCAL NEXT, DONE
 
   MOV BX, AX
   MOV AH, 9
@@ -110,6 +110,28 @@ OK:
 	POP CX
 ENDM
 
+;-----------------------------------------------------;
+;输出杨辉三角
+;-----------------------------------------------------;
+CALCULATE MACRO
+LOCAL START
+START:
+  MOV c, 1
+  ENTER
+  DEC BP
+  MOV AX, BP
+  PRINTCHAR '1'        ; 首个数字为1
+  PRINT BETWEEN
+  MOV AX,1
+  PUSH b
+  CALL CALCNUM
+  POP b
+  INC b
+  DEC CX
+  CMP CX,1
+  JA START
+ENDM
+
 ;-------------------------堆栈段-----------------------;
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
@@ -149,34 +171,17 @@ MZTJ:
   MOV CX, BP            ; 此时CX=阶数
   MOV a, BP             ; a=阶数
   DEC a
-  CALL CALCYHSJ         ; 调用CALCYHSJ子程序
+  ;CALL CALCYHSJ         ; 调用CALCYHSJ子程序
+	CALCULATE
 
 exit:
   MOV AH,4CH
   INT 21H
 ;-----------------------------------------------------;
-;输出杨辉三角
-;-----------------------------------------------------;
-CALCYHSJ:
-  MOV c, 1
-  ENTER
-  DEC BP
-  MOV AX, BP
-  PRINTCHAR '1'        ; 首个数字为1
-  PRINT BETWEEN
-  MOV AX,1
-  PUSH b
-  CALL CALCNUM
-  POP b
-  INC b
-  DEC CX
-  CMP CX,1
-  JA CALCYHSJ
-
-;-----------------------------------------------------;
 ;核心计算模块
 ;-----------------------------------------------------;
-CALCNUM: DEC b    ; b每次减1相乘
+CALCNUM:
+	DEC b     				; b每次减1相乘
   MUL b
   DIV c             ; 除以c，再加1
   INC c
@@ -190,7 +195,7 @@ CALCNUM: DEC b    ; b每次减1相乘
   SUB AX,d          ; 还需显示多少空格
 	PRINTSPACE
   POP AX
-  CALL CALCNUM    ; 继续执行
+  CALL CALCNUM      ; 继续执行
 ok1:
   RET
 ;-----------------------------------------------------;
