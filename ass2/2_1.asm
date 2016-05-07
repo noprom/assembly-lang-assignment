@@ -65,6 +65,35 @@ done:
   NOP
 ENDM
 
+
+;-----------------------------------------------------;
+;输入,数字存放在BP中
+;-----------------------------------------------------;
+INPUTN MACRO
+	PUSH CX
+	PUSH BX
+	PUSH AX
+
+  XOR BP, BP ;BP清零
+  MOV BX, 10
+  MOV CX, 3  ;控制输入的位数,2位数加上一个回车
+input_n:
+  MOV AH, 1  ;从键盘读入数据
+  INT 21H
+  CMP AL, 0DH
+  JZ OK       ;如果回车则输入完毕
+  SUB AL, 30H ;转为十六位二进制数
+  CBW         ;字节扩展为字
+  XCHG AX, BP ;交换到AX中
+  MUL BX      ;扩大十倍
+  ADD BP, AX  ;加一位
+  LOOP input_n
+OK:
+	POP AX
+	POP BX
+	POP CX
+ENDM
+
 ;-------------------------堆栈段-----------------------;
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
@@ -89,46 +118,23 @@ DATA ENDS
 ;-----------------------------------------------------;
 CODE SEGMENT
   ASSUME CS:CODE,DS:DATA,SS:STACKSG
-
-;-----------------------------------------------------;
-;输入子程序,数字存放在BP中
-;-----------------------------------------------------;
-INPUT PROC
-  XOR BP, BP ;BP清零
-  MOV BX, 10
-  MOV CX, 3  ;控制输入的位数,2位数加上一个回车
-input_n:
-  MOV AH, 1  ;从键盘读入数据
-  INT 21H
-  CMP AL, 0DH
-  JZ OK       ;如果回车则输入完毕
-  SUB AL, 30H ;转为十六位二进制数
-  CBW         ;字节扩展为字
-  XCHG AX, BP ;交换到AX中
-  MUL BX      ;扩大十倍
-  ADD BP, AX  ;加一位
-  LOOP input_n
-OK:
-  RET
-INPUT ENDP
-
-START:
+MAIN PROC
   MOV AX,DATA
   MOV DS,AX
 ;-----------------------------------------------------;
 ;判断输入的数字是否在允许的范围之内,直到满足条件才能进行下一步
 ;-----------------------------------------------------;
-MAIN:
+START:
   PRINT MSG             ; 输出字符串，请输入一个数
-  CALL INPUT            ; 调用输入函数,显示输入的数
+  INPUTN            	  ; 输入,显示输入的数
   CMP BP, 0             ; 输入的数存在BP，与0比较
   JG J1                 ; 如果输入的数字>0,继续判断
   PRINTLN ERROR         ; 否则提示错误的输入信息
-  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+  JMP START              ; 无条件跳转到MAIN，重新开始
 J1:CMP BP,11            ; 输入的数存在BP，与11比较
   JB MZTJ               ; 如果输入的数字<11则满足条件，允许执行
   PRINTLN ERROR         ; 否则提示错误的输入信息
-  JMP MAIN              ; 无条件跳转到MAIN，重新开始
+  JMP START              ; 无条件跳转到MAIN，重新开始
 
 MZTJ: ENTER
   PRINT RESULT          ; 显示提示字符串
@@ -206,4 +212,4 @@ ok2:
   RET
 
 CODE ENDS
-END START
+END MAIN
