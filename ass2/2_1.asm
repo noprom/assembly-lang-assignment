@@ -69,6 +69,7 @@ ENDM
 ;输入,数字存放在BP中
 ;-----------------------------------------------------;
 INPUTN MACRO
+	LOCAL START, INPUT_N
 	PUSH CX
 	PUSH BX
 	PUSH AX
@@ -78,7 +79,7 @@ START:
   XOR BP, BP  					;BP清零
   MOV BX, 10
   MOV CX, 3   					;控制输入的位数,2位数加上一个回车
-input_n:
+INPUT_N:
   MOV AH, 1   					;从键盘读入数据
   INT 21H
   CMP AL, 0DH
@@ -88,7 +89,7 @@ input_n:
   XCHG AX, BP 					;交换到AX中
   MUL BX      					;扩大十倍
   ADD BP, AX  					;加一位
-  LOOP input_n
+  LOOP INPUT_N
 
 	CMP BP, 0             ; 输入的数存在BP，与0比较
 	JG J1                 ; 如果输入的数字>0,继续判断
@@ -113,15 +114,14 @@ STACKSG ENDS
 ;-----------------------------------------------------;
 DATA SEGMENT
   MSG DB 'Please input n(n<=10): $'
-  RESULT DB 'The YiangHui triangle:$'
   CON DB 'Do you want to continue?(Y/N): $'
   ERROR DB 'N must in the range of [1, 10]$'
   BETWEEN DB '     $'     ;第1种是首数字1之后的空格
   BACK DB ' $'            ;第2种是和需显示的数字位数相关的空格
-  a DW ?               ;a为阶数
-  b DW ?               ;b为行数
-  c DW ?               ;c为计算时每一项的中间除数,依次递增
-  d DW ?               ;记录位数，用来控制空格的数目
+  a DW ?               		;a为阶数
+  b DW ?               		;b为行数
+  c DW ?               		;c为计算时每一项的中间除数,依次递增
+  d DW ?               		;记录位数，用来控制空格的数目
 DATA ENDS
 ;-----------------------------------------------------;
 ;代码段
@@ -132,11 +132,9 @@ MAIN PROC
   MOV AX,DATA
   MOV DS,AX
 
-	INPUTN
+	INPUTN								;输入N,直到在1-10之间
 
-
-MZTJ: ENTER
-  PRINT RESULT          ; 显示提示字符串
+MZTJ:
   ENTER                 ; 换行
   MOV AX, BP            ; 准备显示杨辉三角,AX=BP=输入的阶数
   PRINTCHAR '1'         ; 输出第一个1
