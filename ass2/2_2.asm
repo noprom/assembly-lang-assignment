@@ -71,15 +71,15 @@ RETURN MACRO
 ENDM
 
 ;-----------------------------------------------------;
-;删除数字
+;删除数字, 入口参数:字符串, 字符串长度
 ;-----------------------------------------------------;
-DELETE_NUM MACRO STR
+DELETE_NUM MACRO STR, STR_SIZE
   LOCAL s, ge0, le9, next
 	PUSH CX
 	PUSH BX
 	PUSH AX																		;寄存器入栈
 
-  MOV CX, strSize
+  MOV CX, STR_SIZE
 	MOV SI, 0
 s:
   MOV BL, BYTE PTR STR[SI]
@@ -105,14 +105,14 @@ ENDM
 ;-----------------------------------------------------;
 ;对字符串进行从小到大的冒泡排序
 ;-----------------------------------------------------;
-SORT_STR MACRO STR, strSize
+SORT_STR MACRO STR, STR_SIZE
 	LOCAL loopA1, loopA2
 	PUSH AX
 	PUSH BX
 	PUSH CX
 	PUSH DX														;寄存器入栈
 
-	MOV DI, strSize - 1								;外层循环次数
+	MOV DI, STR_SIZE - 1							;外层循环次数
 loopA1:
 	MOV CX, DI												;内层循环次数
 	MOV BX, 0
@@ -191,7 +191,7 @@ MAIN PROC
   PRINTSTR beforeModifiedMsg      ;输出修改之前的字符串提示符
   PRINTLNSTR CSTRN                ;输出修改之前的字符串
   PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
-  DELETE_NUM CSTRN                ;首先将数字删除
+  DELETE_NUM CSTRN, strSize       ;首先将数字删除
 	SORT_STR CSTRN, strSize 				;对删除数字之后的字符串进行排序
 	PRINT_STR CSTRN								  ;输出删除数字之后的字符串
   RETURN                          ;返回程序
