@@ -206,7 +206,7 @@ CHG_XY PROC
 	ADD AX, Y
 	MOV X, AX
 
-	MOV AX, Y									每次Y加上X的值
+	MOV AX, Y									;每次Y加上X的值
 	ADD AX, X
 	MOV Y, AX
 
