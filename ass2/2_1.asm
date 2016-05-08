@@ -74,7 +74,7 @@ ENDM
 ;输入,数字存放在BP中
 ;-----------------------------------------------------;
 INPUTN MACRO
-	LOCAL START, INPUT_N
+	LOCAL START, INPUT_N, CONTINUE
 	PUSH CX
 	PUSH BX
 	PUSH AX
@@ -97,10 +97,10 @@ INPUT_N:
   LOOP INPUT_N
 
 	CMP BP, 0             ;输入的数存在BP，与0比较
-	JG J1                 ;如果输入的数字>0,继续判断
+	JG CONTINUE           ;如果输入的数字>0,继续判断
 	PRINTLN ERROR         ;否则提示错误的输入信息
 	JMP START             ;无条件跳转到MAIN，重新开始
-J1:
+CONTINUE:
 	CMP BP,11             ;输入的数存在BP，与11比较
 	JB OK                 ;如果输入的数字<11则满足条件，允许执行
 	PRINTLN ERROR         ;否则提示错误的输入信息
