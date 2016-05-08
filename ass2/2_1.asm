@@ -25,6 +25,21 @@ PRINTCHAR MACRO CHAR
 ENDM
 
 ;-----------------------------------------------------;
+;输出一个字符串的内容
+;-----------------------------------------------------;
+PRINTSTR MACRO ASC
+	PUSH AX
+	PUSH DX
+
+	MOV	AH, 9
+	LEA	DX, ASC
+	INT	21H
+
+	POP DX
+	POP AX
+ENDM
+
+;-----------------------------------------------------;
 ;输出一个字符串的内容,并且换行
 ;-----------------------------------------------------;
 PRINTLN	MACRO	ASC
@@ -44,30 +59,6 @@ ENTER MACRO
   INT 21H
   MOV DL, 0AH
   INT 21H
-ENDM
-
-;-----------------------------------------------------;
-;输出空格
-;-----------------------------------------------------;
-PRINTSPACE MACRO
-	LOCAL NEXT, DONE
-	PUSH AX
-	PUSH BX
-	PUSH DX
-
-  MOV BX, AX
-  MOV AH, 9
-  LEA DX, SPACE2
-NEXT:
-  CMP BX, 0
-  JZ DONE
-  INT 21H
-  DEC BX
-  JMP NEXT
-DONE:
-	POP DX
-	POP BX
-	POP AX
 ENDM
 
 ;-----------------------------------------------------;
@@ -130,20 +121,35 @@ START:
   MOV c, 1
   ENTER
   DEC BP
-  MOV AX, BP
+  MOV AX, BP						;此时AX=阶数
   PRINTCHAR '1'         ;首个数字为1
   PRINT SPACE1
-  MOV AX,1
+  MOV AX, 1
   PUSH b
   CALL CALCNUM
   POP b
   INC b
   DEC CX
-  CMP CX,1
+  CMP CX, 1
   JA START
 EXIT:
 ENDM
 
+;-----------------------------------------------------;
+;输出空格
+;-----------------------------------------------------;
+PRINTSPACE MACRO
+	LOCAL S
+	PUSH AX
+	PUSH CX								;寄存器入栈
+
+	MOV CX, AX						;CX=要显示的空格个数
+S:PRINTSTR SPACE2				;打印空格
+  LOOP S
+
+	POP CX
+	POP AX								;寄存器出栈
+ENDM
 ;-------------------------堆栈段-----------------------;
 STACKSG SEGMENT STACK 'S'
   DW 64 DUP('ST')
@@ -172,7 +178,7 @@ MAIN PROC
 
 	INPUTN							 	 ;输入N,直到在1-10之间
 	CALCULATE						 	 ;计算并且显示杨辉三角
-exit:
+
   MOV AH,4CH
   INT 21H
 MAIN ENDP
@@ -185,17 +191,17 @@ CALCNUM PROC
   MUL b
   DIV c             		;除以c，再加1
   INC c
-  CMP b,0           		;b是否为0
+  CMP b, 0           		;b是否为0
   JZ ok1
 
   PUSH AX           		;保存所得数据
-  MOV d,0           		;此处d为位数，为了显示后面的空格
+  MOV d, 0           		;此处d为位数，为了显示后面的空格
   CALL PRINTNUM
-  MOV AX,6          		;预设，总共显示的空格数为6个单位
-  SUB AX,d          		;还需显示多少空格
-	PRINTSPACE
-  POP AX
-  CALL CALCNUM      		;继续执行
+  MOV AX, 6          		;预设，总共显示的空格数为6个单位
+  SUB AX, d          		;还需显示多少空格
+	PRINTSPACE						;打印该数字之后的空格
+  POP AX								;恢复AX中的数据
+  CALL CALCNUM      		;继续下一次计算
 ok1:
   RET
 CALCNUM ENDP
