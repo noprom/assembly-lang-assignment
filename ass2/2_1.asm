@@ -40,7 +40,7 @@ ENDM
 ;-----------------------------------------------------;
 ENTER MACRO
   MOV AH, 2
-  MOV DL, 0DH
+  MOV DL, CR
   INT 21H
   MOV DL, 0AH
   INT 21H
@@ -74,7 +74,7 @@ ENDM
 ;输入,数字存放在BP中
 ;-----------------------------------------------------;
 INPUTN MACRO
-	LOCAL START, INPUT_N, CONTINUE
+	LOCAL START, INPUT_N, JUDGE, CONTINUE
 	PUSH CX
 	PUSH BX
 	PUSH AX
@@ -87,8 +87,8 @@ START:
 INPUT_N:
   MOV AH, 1   					;从键盘读入数据
   INT 21H
-  CMP AL, 0DH
-  JZ OK       					;如果回车则输入完毕
+  CMP AL, CR
+  JZ JUDGE       			  ;如果回车则输入完毕
   SUB AL, 30H 					;转为十六位二进制数
   CBW         					;字节扩展为字
   XCHG AX, BP 					;交换到AX中
@@ -96,6 +96,7 @@ INPUT_N:
   ADD BP, AX  					;加一位
   LOOP INPUT_N
 
+JUDGE:
 	CMP BP, 0             ;输入的数存在BP，与0比较
 	JG CONTINUE           ;如果输入的数字>0,继续判断
 	PRINTLN ERROR         ;否则提示错误的输入信息
