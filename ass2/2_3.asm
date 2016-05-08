@@ -303,22 +303,22 @@ BEEP:
   JMP REPEAT                  ;转重新选择
 
 SHOW_TOP_3:                   ;显示排名前三的同学的成绩
-  CALL SORT_BY_SCORE
-  PRINTLNSTR MSG_TOP3
-  PRINTLNSTR MSG_SCORE
-  MOV AX, 3
-  CALL PRINT_STU
+  CALL SORT_BY_SCORE          ;按总分排序
+  PRINTLNSTR MSG_TOP3         ;输出提示
+  PRINTLNSTR MSG_SCORE        ;输出提示
+  MOV AX, 3                   ;输出3个学生的成绩
+  CALL PRINT_STU              ;调用输出子程序
 
   MOV AH, 0
   INT 16H			                ;等待键盘输入
   JMP REPEAT		              ;返回菜单
 
 SHOW_NO1_5:                   ;显示学号前5的同学的成绩
-  CALL SORT_BY_ID
-  PRINTLNSTR MSG_N1_5
-  PRINTLNSTR MSG_SCORE
-  MOV AX, 5
-  CALL PRINT_STU
+  CALL SORT_BY_ID             ;按学号排序
+  PRINTLNSTR MSG_N1_5         ;输出提示
+  PRINTLNSTR MSG_SCORE        ;输出提示
+  MOV AX, 5                   ;输出5个学生的成绩
+  CALL PRINT_STU              ;调用输出子程序
 
   MOV AH, 0
   INT 16H			                ;等待键盘输入
@@ -336,7 +336,7 @@ INPUT_STU PROC
   PUSH BP
   PUSH CX                     ;寄存器入栈
 
-  MOV CX, 0                   ;循环10次
+  MOV CX, 0                   ;最多循环10次
   MOV BP, 0                   ;BP用来索引每个学生的数据,初始化为0
 INPUT:
   PRINTLNSTR MSG_INPUT3
