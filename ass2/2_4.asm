@@ -53,8 +53,8 @@ ENDM
 CHG_POS MACRO
 	MOV AH, 2									;设置光标
 	MOV BH, 0
-	MOV DH, Y									;Y行
-	MOV DL, X									;X列
+	MOV DH, BYTE PTR Y									;Y行
+	MOV DL, BYTE PTR X									;X列
 	INT 10H
 	PRINTCHAR MSG_START
 ENDM
@@ -73,8 +73,8 @@ DATASG SEGMENT
   COLOR DB 0FH                ;背景颜色
   CNT_COLOR DB 10             ;颜色改变计数器
 	CNT_NUM   DB 10							;数字移动计数器
-	X					DB 3							;初始化光标所在列
-	Y 				DB 12							;初始化光标所在行
+	X					DW 3							;初始化光标所在列
+	Y 				DW 12							;初始化光标所在行
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -152,6 +152,9 @@ EXIT_MAIN:
   INT 21H
 MAIN ENDP
 
+;-----------------------------------------------------;
+;中断处理子程序
+;-----------------------------------------------------;
 INT_1CH PROC FAR              ;新1CH中断处理子程序
   PUSH AX
   PUSH BX
@@ -175,6 +178,7 @@ M2:
   JMP EXIT
 
 CH_POS:
+	CALL CHG_XY
 	CHG_POS
 	MOV CNT_NUM, 1
 	JMP M2
@@ -191,5 +195,23 @@ EXIT:
   POP	AX		                  ;(5)恢复寄存器
   IRET                        ;(6)中断返回
 INT_1CH ENDP
+
+;-----------------------------------------------------;
+;改变显示*的x, y
+;-----------------------------------------------------;
+CHG_XY PROC
+	PUSH AX
+
+	MOV AX, X									;每次X加上Y的值
+	ADD AX, Y
+	MOV X, AX
+
+	MOV AX, Y									每次Y加上X的值
+	ADD AX, X
+	MOV Y, AX
+
+	POP AX
+	RET
+CHG_XY ENDP
 CODESG ENDS
 END MAIN
