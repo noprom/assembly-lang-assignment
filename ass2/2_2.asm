@@ -143,7 +143,7 @@ PRINT_STR MACRO STR, STR_SIZE
 
 	PUSH CX
 	PUSH BX
-	PUSH AX																		;寄存器入栈
+	PUSH AX													;寄存器入栈
 
   MOV CX, STR_SIZE
 	MOV SI, 0
@@ -156,7 +156,7 @@ next:
 	INC SI
   LOOP s
 
-	POP AX																  ;寄存器出栈
+	POP AX												;寄存器出栈
 	POP BX
 	POP CX
 ENDM

@@ -51,6 +51,11 @@ ENDM
 ;改变*位置,时间间隔为0.1秒
 ;-----------------------------------------------------;
 CHG_POS MACRO
+	MOV AH, 2									;设置光标
+	MOV BH, 0
+	MOV DH, Y									;Y行
+	MOV DL, X									;X列
+	INT 10H
 	PRINTCHAR MSG_START
 ENDM
 ;-----------------------------------------------------;
@@ -68,6 +73,8 @@ DATASG SEGMENT
   COLOR DB 0FH                ;背景颜色
   CNT_COLOR DB 10             ;颜色改变计数器
 	CNT_NUM   DB 10							;数字移动计数器
+	X					DB 3							;初始化光标所在列
+	Y 				DB 12							;初始化光标所在行
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -134,6 +141,12 @@ EXIT_MAIN:
   MOV	CX, 0
   MOV	DX, 184FH
   INT	10H
+
+	MOV AH, 2								  	;恢复光标位置
+	MOV BH, 0
+	MOV DH, 0										;0行
+	MOV DL, 0										;0列
+	INT 10H
 
   MOV AX, 4C00H               ;返回操作系统
   INT 21H
