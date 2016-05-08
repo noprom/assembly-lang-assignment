@@ -138,14 +138,14 @@ ENDM
 ;-----------------------------------------------------;
 ;输出排序之后的字符串
 ;-----------------------------------------------------;
-PRINT_STR MACRO STR
+PRINT_STR MACRO STR, STR_SIZE
   LOCAL s, next
 
 	PUSH CX
 	PUSH BX
 	PUSH AX																		;寄存器入栈
 
-  MOV CX, strSize
+  MOV CX, STR_SIZE
 	MOV SI, 0
 s:
   MOV BL, BYTE PTR STR[SI]
@@ -193,7 +193,7 @@ MAIN PROC
   PRINTSTR afterModifiedMsg       ;输出修改之后的字符串提示符
   DELETE_NUM CSTRN, strSize       ;首先将数字删除
 	SORT_STR CSTRN, strSize 				;对删除数字之后的字符串进行排序
-	PRINT_STR CSTRN								  ;输出删除数字之后的字符串
+	PRINT_STR CSTRN, strSize			  ;输出删除数字之后的字符串
   RETURN                          ;返回程序
 MAIN ENDP
 CODESG ENDS
