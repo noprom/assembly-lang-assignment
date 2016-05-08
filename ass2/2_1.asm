@@ -57,7 +57,7 @@ PRINTSPACE MACRO
 
   MOV BX, AX
   MOV AH, 9
-  LEA DX, BACK
+  LEA DX, SPACE2
 NEXT:
   CMP BX, 0
   JZ DONE
@@ -131,7 +131,7 @@ START:
   DEC BP
   MOV AX, BP
   PRINTCHAR '1'         ;首个数字为1
-  PRINT BETWEEN
+  PRINT SPACE1
   MOV AX,1
   PUSH b
   CALL CALCNUM
@@ -153,8 +153,8 @@ STACKSG ENDS
 DATASG SEGMENT
   MSG DB 'Please input n(n<=10): $'
   ERROR DB 'N must in the range of [1, 10]$'
-  BETWEEN DB '     $'     ;首数字1之后的空格
-  BACK DB ' $'            ;与数字位数相关的空格
+  SPACE1 DB '     $'      ;首数字1之后的空格
+  SPACE2 DB ' $'          ;与数字位数相关的空格
   a DW ?               		;a为阶数
   b DW ?               		;b为行数
   c DW ?               		;c为计算时每一项的中间除数,依次递增
