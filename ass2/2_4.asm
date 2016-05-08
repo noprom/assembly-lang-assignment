@@ -30,8 +30,8 @@ CHG_COLOR MACRO
   PUSH CX
   PUSH DX
 
-  ADD COLOR, 10H
-  AND COLOR, 01111111B
+  ADD COLOR, 10H								;每次时间间隔颜色改变
+  AND COLOR, 01111111B					;变色
   MOV BH, COLOR
   MOV AH, 6
   MOV AL, 0
@@ -48,6 +48,12 @@ CHG_COLOR MACRO
 ENDM
 
 ;-----------------------------------------------------;
+;改变*位置,时间间隔为0.1秒
+;-----------------------------------------------------;
+CHG_POS MACRO
+	PRINTCHAR MSG_START
+ENDM
+;-----------------------------------------------------;
 ;堆栈段
 ;-----------------------------------------------------;
 STACKSG SEGMENT STACK 'S'
@@ -58,11 +64,10 @@ STACKSG ENDS
 ;数据段
 ;-----------------------------------------------------;
 DATASG SEGMENT
-  COUNT DW 1                  ;COUNT为0.5秒的时间计数值
   MSG_START DB '*'            ;显示的*号
-  CHAR DB	01H	                ;在中断子程序中显示的笑脸字符初始值
   COLOR DB 0FH                ;背景颜色
   CNT_COLOR DB 10             ;颜色改变计数器
+	CNT_NUM   DB 10							;数字移动计数器
 DATASG ENDS
 
 ;-----------------------------------------------------;
@@ -98,22 +103,22 @@ MAIN PROC FAR
 ;------------------主程序其他功能----------------------;
 
   ;OTHER  FUNCTION
-	MOV	AH,6		  ;以蓝底白字清屏
-	MOV	AL,0
-	MOV	BH,1FH
-	MOV	CX,0
-	MOV	DX,184FH
+	MOV	AH, 6		   ;以蓝底白字清屏
+	MOV	AL, 0
+	MOV	BH, 1FH
+	MOV	CX, 0
+	MOV	DX, 184FH
 	INT	10H
 
-	MOV	AL,0
+	MOV	AL, 0
 PRINT0:
-	PUSH	AX		;保存显示的字符
-	MOV	AH,1		;等待输入
-	INT	21H
-	OR	AL,20H		;大写字母转换为小写
-	CMP	AL,'q'		;退出？
-	POP	AX		;恢复显示的字符
-	JE	EXIT_MAIN		;若退出则转
+	PUSH AX			 	;保存显示的字符
+	MOV AH, 1		 	;等待输入
+	INT 21H
+	OR AL, 20H		;大写字母转换为小写
+	CMP AL, 'q'		;退出？
+	POP AX				;恢复显示的字符
+	JE EXIT_MAIN	;若退出则转
 
 ;------------------恢复原中断向量----------------------;
 EXIT_MAIN:
@@ -123,11 +128,11 @@ EXIT_MAIN:
   MOV AL, 1CH
   INT 21H
 
-  MOV	AH,6		  ;以黑底白字清屏
-  MOV	AL,0
-  MOV	BH,07H
-  MOV	CX,0
-  MOV	DX,184FH
+  MOV	AH, 6		  							;以黑底白字清屏
+  MOV	AL, 0
+  MOV	BH, 07H
+  MOV	CX, 0
+  MOV	DX, 184FH
   INT	10H
 
   MOV AX, 4C00H               ;返回操作系统
@@ -145,10 +150,21 @@ INT_1CH PROC FAR              ;新1CH中断处理子程序
   MOV	AX, DATASG
   MOV	DS, AX
 
+M1:
+	DEC CNT_NUM
+	CMP CNT_NUM, 0
+	JE CH_POS
+
+M2:
   DEC CNT_COLOR
   CMP CNT_COLOR, 0
   JE CH_BG
   JMP EXIT
+
+CH_POS:
+	CHG_POS
+	MOV CNT_NUM, 1
+	JMP M2
 CH_BG:
   CHG_COLOR
   MOV CNT_COLOR, 10

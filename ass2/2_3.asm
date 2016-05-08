@@ -318,7 +318,7 @@ SHOW_NO1_5:                   ;显示学号前5的同学的成绩
   PRINTLNSTR MSG_N1_5         ;输出提示
   PRINTLNSTR MSG_SCORE        ;输出提示
   MOV AX, 5                   ;输出5个学生的成绩
-  CALL PRINT_STU              ;调用输出子程序
+  CALL PRINT_STU
 
   MOV AH, 0
   INT 16H			                ;等待键盘输入
@@ -436,7 +436,6 @@ CNT_ID:
   POP AX                    ;寄存器出栈
   RET
 SORT_BY_ID ENDP
-
 
 ;-----------------------------------------------------;
 ;打印学生的信息,AX中存放多少个学生
